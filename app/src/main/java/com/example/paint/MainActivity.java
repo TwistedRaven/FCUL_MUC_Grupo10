@@ -12,15 +12,12 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class MainActivity extends AppCompatActivity {
 
-    ConstraintLayout layout;
     int splashColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        layout = (ConstraintLayout) findViewById(R.id.layout);
-
 
         Button settings_button = findViewById(R.id.settings_button_btn);
         Button about_button = findViewById(R.id.about_button_btn);
