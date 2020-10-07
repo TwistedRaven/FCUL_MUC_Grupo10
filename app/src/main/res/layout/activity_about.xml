@@ -14,7 +14,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="40dp">
+        tools:layout_editor_absoluteY="60dp">
 
         <ImageView
             android:id="@+id/img_student_1"
