@@ -1,61 +1,62 @@
 package com.example.paint;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.app.Notification;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class MainActivity extends AppCompatActivity {
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mToggle;
+
+    int splashColor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Assignar variável
-        mDrawerLayout = findViewById(R.id.drawer);
+        Button settings_button = findViewById(R.id.settings_button_btn);
+        Button about_button = findViewById(R.id.about_button_btn);
+
+        settings_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                openColorPicker();
+
+
+            }
+        });
+
+        about_button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent switch_to_about = new Intent(getApplicationContext(), AboutActivity.class);
+                startActivity(switch_to_about);
+            }
+        });
+
+
     }
 
-    public void ClickMenu(View view){
-        //Open Drawer
-        openDrawer(mDrawerLayout);
+    private void openColorPicker() {
+
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, splashColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+            }
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                splashColor = color;
+                Intent switch_to_splash = new Intent();
+                switch_to_splash.putExtra("color", splashColor);
+                setResult(RESULT_OK, switch_to_splash);
+                //finish();
+            }
+        });
+        colorPicker.show();
     }
 
-    private static void openDrawer(DrawerLayout mDrawerLayout){
-        //Open Drawer layout
-        mDrawerLayout.openDrawer(GravityCompat.START);
-    }
 
-    public void ClickLogo(View view){
-        //Close Drawer
-        closeDrawer(mDrawerLayout);
-    }
-
-    private static void closeDrawer(DrawerLayout mDrawerLayout) {
-        //Close drawer layout
-        //Check condition
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)){
-            //When drawer is open...
-            //Close drawer
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        }
-    }
-
-    public void ClickHome(View view){
-        //Recreate activity
-        recreate();
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-        //Close drawer
-        closeDrawer(mDrawerLayout);
-    }
 }

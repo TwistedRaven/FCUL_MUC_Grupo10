@@ -1,7 +1,31 @@
 <resources>
     <string name="app_name">Paint</string>
+
+
+
     <string name="start_button">Press START</string>
+
+
+    <string name="settings_button">Definições</string>
+
+    <string name="about_button">Sobre</string>
+
     <string name="start_text">Computação Móvel - Grupo 10</string>
     <string name="Open">Abrir</string>
     <string name="Close">Fechar</string>
+
+    <string name="student_name_label">Estudante:</string>
+    <string name="student_number_label">Número:</string>
+
+    <string name="student_1_name">Pedro Carrega</string>
+    <string name="student_1_number">49480</string>
+
+    <string name="student_2_name">Ricardo Meireles</string>
+    <string name="student_2_number">55841</string>
+
+    <string name="student_3_name">Bruno Serrano</string>
+    <string name="student_3_number">47868</string>
+
+    <string name="student_Description">Estudante</string>
+    <string name="student_description">Student_Description</string>
 </resources>
