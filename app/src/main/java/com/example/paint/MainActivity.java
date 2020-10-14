@@ -2,6 +2,8 @@ package com.example.paint;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,8 +18,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        CanvasFragment cFragment = new CanvasFragment();
+        PaletteFragment pFragment = new PaletteFragment();
+
+        fragmentTransaction.add(R.id.fragment_container_canvas, cFragment); //container do canvas fragment
+        fragmentTransaction.add(R.id.fragment_container_palette, pFragment); //container do palette fragment
+        fragmentTransaction.commit();
 
         Button settings_button = findViewById(R.id.settings_button_btn);
         Button about_button = findViewById(R.id.about_button_btn);
@@ -25,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
         settings_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 openColorPicker();
-
-
             }
         });
 
@@ -57,6 +67,4 @@ public class MainActivity extends AppCompatActivity {
         });
         colorPicker.show();
     }
-
-
 }
