@@ -350,4 +350,118 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/linear_student_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linear_student_3">
+
+        <ImageView
+            android:id="@+id/img_student_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="35dp"
+            android:layout_marginLeft="35dp"
+            android:contentDescription="@string/student_description"
+            android:src="@mipmap/ic_student_3_round"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RelativeLayout
+            android:id="@+id/student_4_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20sp"
+            android:layout_marginLeft="20sp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@+id/img_student_3"
+            app:layout_constraintTop_toTopOf="@+id/img_student_3">
+
+            <RelativeLayout
+                android:id="@+id/student_4_first_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/student_4_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+
+                    android:text="@string/student_name_label"
+
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/student_4_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignEnd="@+id/student_4_label"
+                    android:layout_alignRight="@+id/student_4_label"
+
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+
+                    android:layout_marginStart="10sp"
+                    android:layout_marginLeft="10sp"
+
+                    android:layout_toEndOf="@+id/student_4_label"
+                    android:layout_toRightOf="@+id/student_4_label"
+
+                    android:text="@string/student_4_name"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/student_4_second_row"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/student_4_first_row"
+                android:layout_alignEnd="@+id/student_4_first_row"
+                android:layout_alignRight="@+id/student_4_first_row"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="10sp">
+
+                <TextView
+                    android:id="@+id/student_4_number_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="@string/student_number_label"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/student_4_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_alignEnd="@+id/student_4_number_label"
+                    android:layout_alignRight="@+id/student_4_number_label"
+
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+
+                    android:layout_marginStart="10sp"
+                    android:layout_marginLeft="10sp"
+
+                    android:layout_toEndOf="@+id/student_4_number_label"
+                    android:layout_toRightOf="@+id/student_4_number_label"
+
+                    android:text="@string/student_4_number"
+                    android:textSize="15sp" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
