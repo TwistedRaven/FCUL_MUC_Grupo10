@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -66,8 +67,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PaletteFragment pFragment = new PaletteFragment();
 
         // You need to indicate the container fragment where they need to appear
-        fragmentTransaction.add(R.id.container_fragment, cFragment); //Container do Canvas Fragment
-        fragmentTransaction.add(R.id.container_fragment2, pFragment); //Container do Palette fragment
+        fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
+        }
+
 
         // Needs to be committed to be loaded into the app
 
@@ -87,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             CanvasFragment cFragment = new CanvasFragment();
             PaletteFragment pFragment = new PaletteFragment();
             // Replace the fragment so it doesn't keep stacking on top of itself
-            fragmentTransaction.replace(R.id.container_fragment, cFragment);
-            fragmentTransaction.replace(R.id.container_fragment2, pFragment);
+            fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
+            fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
             fragmentTransaction.commit();
         }
 
@@ -96,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             AboutFragment aFragment = new AboutFragment();
-            fragmentTransaction.replace(R.id.container_fragment, aFragment);
+            fragmentTransaction.replace(R.id.canvas_fragment, aFragment);
             fragmentTransaction.commit();
         }
 
@@ -104,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SettingsFragment sFragment = new SettingsFragment();
-            fragmentTransaction.replace(R.id.container_fragment, sFragment);
+            fragmentTransaction.replace(R.id.canvas_fragment, sFragment);
             fragmentTransaction.commit();
         }
 

@@ -14,15 +14,23 @@
         android:icon="@drawable/ic_info"
         android:title="About" />
 
-    <item android:title="Interesting Title">
+    <item android:title="Tools">
         <menu>
             <item
-                android:id="@+id/tools"
+                android:id="@+id/color"
                 android:icon="@drawable/ic_info"
-                android:title="Tools">
-
-
+                android:title="Color Picker">
             </item>
+            <item
+            android:id="@+id/ruler"
+            android:icon="@drawable/ic_info"
+            android:title="Ruler">
+        </item>
+            <item
+            android:id="@+id/Eraser"
+            android:icon="@drawable/ic_info"
+            android:title="Eraser">
+        </item>
 
         </menu>
 
