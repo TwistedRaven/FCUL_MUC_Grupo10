@@ -367,7 +367,7 @@
             android:layout_marginStart="35dp"
             android:layout_marginLeft="35dp"
             android:contentDescription="@string/student_description"
-            android:src="@mipmap/ic_student_3_round"
+            android:src="@mipmap/ic_student_4_round"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
