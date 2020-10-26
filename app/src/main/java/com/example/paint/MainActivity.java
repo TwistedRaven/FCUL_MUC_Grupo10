@@ -23,7 +23,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     // Handling objects (Drawer layout...)
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         fragmentTransaction.commit();
 
-        }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
 
         //Now we use the IDs of the Menu Item to identify which menu was clicked
-        if(menuItem.getItemId() == R.id.home){
+        if (menuItem.getItemId() == R.id.home) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             CanvasFragment cFragment = new CanvasFragment();
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentTransaction.commit();
         }
 
-        if(menuItem.getItemId() == R.id.about){
+        if (menuItem.getItemId() == R.id.about) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             AboutFragment aFragment = new AboutFragment();
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentTransaction.commit();
         }
 
-        if(menuItem.getItemId() == R.id.settings){
+        if (menuItem.getItemId() == R.id.settings) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SettingsFragment sFragment = new SettingsFragment();
