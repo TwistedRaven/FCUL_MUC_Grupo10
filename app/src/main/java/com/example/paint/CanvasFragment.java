@@ -71,5 +71,9 @@ public class CanvasFragment extends Fragment {
             invalidate();
             return true;
         }
+
+        public void changeColor(int color){
+            paint.setColor(color);
+        }
     }
 }

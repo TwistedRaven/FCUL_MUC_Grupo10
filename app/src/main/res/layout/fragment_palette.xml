@@ -6,23 +6,93 @@
     android:layout_height="match_parent"
     tools:context=".PaletteFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#959595">
 
-    </LinearLayout>
-
-    <!--<TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello Palette Fragment!"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <Button
+        android:id="@+id/color_black"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginTop="31dp"
+        android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />-->
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/color_grey"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="117dp"
+        android:layout_marginLeft="117dp"
+        android:layout_marginTop="31dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_red"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginTop="100dp"
+        android:background="#FFFF0000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_purple"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="117dp"
+        android:layout_marginLeft="117dp"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/holo_purple"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_yellow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginTop="238dp"
+        android:background="#FFEB3B"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_orange"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="33dp"
+        android:layout_marginLeft="33dp"
+        android:layout_marginTop="169dp"
+        android:background="#FF5722"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_blue"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="117dp"
+        android:layout_marginLeft="117dp"
+        android:layout_marginTop="169dp"
+        android:background="#2196F3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/color_green"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="117dp"
+        android:layout_marginLeft="117dp"
+        android:layout_marginTop="238dp"
+        android:background="#4CAF50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
