@@ -1,19 +1,13 @@
 package com.example.paint;
 
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -21,9 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
-import yuku.ambilwarna.AmbilWarnaDialog;
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PaletteFragment.OnPaletteFragmentListener {
 
     // Handling objects (Drawer layout...)
 
@@ -32,6 +24,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Custom Toolbar - androidx one
     Toolbar toolbar;
     NavigationView navigationView;
+    CanvasFragment cFragment;
+    PaletteFragment pFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // These serve to load the Fragment into this MainActivity
 
         // Load Canvas and Palette Fragment
-        CanvasFragment cFragment = new CanvasFragment();
-        PaletteFragment pFragment = new PaletteFragment();
+        cFragment = new CanvasFragment();
+        pFragment = new PaletteFragment();
 
         // You need to indicate the container fragment where they need to appear
         fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
@@ -88,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (menuItem.getItemId() == R.id.home) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            CanvasFragment cFragment = new CanvasFragment();
-            PaletteFragment pFragment = new PaletteFragment();
+            cFragment = new CanvasFragment();
+            pFragment = new PaletteFragment();
             // Replace the fragment so it doesn't keep stacking on top of itself
             fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -116,5 +110,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return true;
 
+    }
+
+
+    @Override
+    public void messageCanvas(int color) {
+        cFragment.changeCanvasColor(color);
     }
 }

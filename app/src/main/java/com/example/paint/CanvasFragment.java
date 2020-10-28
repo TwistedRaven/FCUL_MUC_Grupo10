@@ -15,9 +15,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 public class CanvasFragment extends Fragment {
+
+    PaintCanvas canvas;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return new PaintCanvas(getContext());
+        canvas = new PaintCanvas(getContext());
+
+        return canvas;
     }
 
     public static class PaintCanvas extends View {
@@ -72,8 +77,8 @@ public class CanvasFragment extends Fragment {
             return true;
         }
 
-        public void changeColor(int color){
-            paint.setColor(color);
-        }
+        private void changeColor(int color){ paint.setColor(color); }
     }
+
+    public void changeCanvasColor(int color){ canvas.changeColor(color); }
 }

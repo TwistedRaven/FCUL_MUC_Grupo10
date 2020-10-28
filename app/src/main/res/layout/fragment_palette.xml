@@ -15,6 +15,7 @@
         android:layout_marginLeft="33dp"
         android:layout_marginTop="31dp"
         android:background="@android:color/black"
+        android:onClick=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,6 +27,7 @@
         android:layout_marginLeft="117dp"
         android:layout_marginTop="31dp"
         android:background="@android:color/darker_gray"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,6 +39,7 @@
         android:layout_marginLeft="33dp"
         android:layout_marginTop="100dp"
         android:background="#FFFF0000"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +51,7 @@
         android:layout_marginLeft="117dp"
         android:layout_marginTop="100dp"
         android:background="@android:color/holo_purple"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,6 +63,7 @@
         android:layout_marginLeft="33dp"
         android:layout_marginTop="238dp"
         android:background="#FFEB3B"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,6 +75,7 @@
         android:layout_marginLeft="33dp"
         android:layout_marginTop="169dp"
         android:background="#FF5722"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,6 +87,7 @@
         android:layout_marginLeft="117dp"
         android:layout_marginTop="169dp"
         android:background="#2196F3"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,6 +99,7 @@
         android:layout_marginLeft="117dp"
         android:layout_marginTop="238dp"
         android:background="#4CAF50"
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
