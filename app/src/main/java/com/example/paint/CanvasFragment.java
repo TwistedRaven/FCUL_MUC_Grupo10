@@ -24,6 +24,8 @@ import java.util.Random;
 
 public class CanvasFragment extends Fragment {
 
+    PaintCanvas paintCanvas;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -32,12 +34,14 @@ public class CanvasFragment extends Fragment {
         mGestureDetector.setIsLongpressEnabled(true);
         mGestureDetector.setOnDoubleTapListener(mGestureListener);
 
-        PaintCanvas paintCanvas = new PaintCanvas(getContext(), null, mGestureDetector);
+        paintCanvas = new PaintCanvas(getContext(), null, mGestureDetector);
         mGestureListener.setCanvas(paintCanvas);
 
-        return new PaintCanvas(getContext(), null, mGestureDetector);
+        return paintCanvas;
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
     }
+
+    public void changeCanvasColor(int color) { paintCanvas.changeColor(color); }
 
 
     public class PaintCanvas extends View implements View.OnTouchListener{
