@@ -15,7 +15,7 @@
         android:layout_marginLeft="33dp"
         android:layout_marginTop="31dp"
         android:background="@android:color/black"
-        android:onClick=""
+        android:onClick="changeCanvasColor"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
