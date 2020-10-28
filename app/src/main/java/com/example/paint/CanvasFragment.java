@@ -17,7 +17,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CanvasFragment extends Fragment {
 
@@ -41,14 +42,22 @@ public class CanvasFragment extends Fragment {
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
     }
 
-    public void changeCanvasColor(int color) { paintCanvas.changeColor(color); }
+    public void changeCanvasColor(int color) {
+        paintCanvas.changeColor(color);
+    }
 
 
-    public class PaintCanvas extends View implements View.OnTouchListener{
+    public static class PaintCanvas extends View implements View.OnTouchListener {
 
-        private Paint paint = new Paint();
-        private Path path = new Path();
+        private List<Path> paths = new ArrayList<>();
+        private List<Paint> paints = new ArrayList<>();
+
+        private Paint currentPaint = new Paint();
+        private Path currentPath = new Path();
+
         private int backGroundColor = Color.WHITE;
+        private int currentPaintColor = Color.BLACK;
+
         private GestureDetector mGestureDetector;
 
         /*public PaintCanvas(Context context) {
@@ -60,6 +69,8 @@ public class CanvasFragment extends Fragment {
 
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
+            paths.add(currentPath);
+            paints.add(currentPaint);
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
@@ -68,16 +79,18 @@ public class CanvasFragment extends Fragment {
 
         //Inicializa o stroke da imagem
         private void initPaint() {
-            paint.setAntiAlias(true);
-            paint.setStrokeWidth(20f);
-            paint.setColor(Color.BLACK);
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeJoin(Paint.Join.ROUND);
+            currentPaint.setAntiAlias(true);
+            currentPaint.setStrokeWidth(20f);
+            currentPaint.setColor(currentPaintColor);
+            currentPaint.setStyle(Paint.Style.STROKE);
+            currentPaint.setStrokeJoin(Paint.Join.ROUND);
         }
 
         @Override
-        protected void onDraw(Canvas canvas) {
-            canvas.drawPath(path, paint);// draws the path with the paint
+        protected void onDraw(final Canvas canvas) {
+            for (int i = 0; i < paths.size(); i++) {
+                canvas.drawPath(paths.get(i), paints.get(i)); // draws each path with its paint
+            }
         }
 
         @Override
@@ -96,12 +109,15 @@ public class CanvasFragment extends Fragment {
             float eventY = event.getY();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    path.moveTo(eventX, eventY);// updates the path initial point
+                    currentPath.moveTo(eventX, eventY);// updates the path initial point
                     return true;
                 case MotionEvent.ACTION_MOVE:
-                    path.lineTo(eventX, eventY);// makes a line to the point each time this event is fired
+                    currentPath.lineTo(eventX, eventY);// makes a line to the point each time this event is fired
                     break;
                 case MotionEvent.ACTION_UP:// when you lift your finger
+                    paths.add(currentPath = new Path());
+                    paints.add(currentPaint = new Paint());
+                    initPaint();
                     performClick();
                     break;
                 default:
@@ -112,29 +128,31 @@ public class CanvasFragment extends Fragment {
             return true;
         }
 
-        public void changeColor(int color){
-            paint.setColor(color);
+        public void changeColor(int color) {
+            currentPaintColor = color;
+            currentPaint.setColor(currentPaintColor);
             //switch aqui em principio para as cores
         }
 
-        public void fillBackground(){
-
+        public void fillBackground() {
             setBackgroundColor(backGroundColor);
         }
 
-        public void changeStrokeSize(){
-            paint.setStrokeWidth(50f);
+        public void changeStrokeSize() {
+            currentPaint.setStrokeWidth(50f);
         }
 
-        public void canvasErase(){
-
-            path.reset();
+        public void canvasErase() {
+            paths.clear();
+            paints.clear();
+            paths.add(currentPath = new Path());
+            paints.add(currentPaint = new Paint());
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
         }
     }
 
-    public class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
+    public static class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
 
         private PaintCanvas canvas;
 
@@ -146,14 +164,14 @@ public class CanvasFragment extends Fragment {
         @Override
         public void onLongPress(MotionEvent motionEvent) {
             canvas.fillBackground();
-            Log.d("LongPress","Long Press!");
+            Log.d("LongPress", "Long Press!");
         }
 
         // On Double Tap
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
             canvas.canvasErase();
-            Log.d("DoubleTap","Double Click!");
+            Log.d("DoubleTap", "Double Click!");
             return false;
         }
 
@@ -164,7 +182,10 @@ public class CanvasFragment extends Fragment {
             //canvas.changeStrokeSize();
             return false;
         }
-        public void changeCanvasColor(int color){ canvas.changeColor(color); }
+
+        public void changeCanvasColor(int color) {
+            canvas.changeColor(color);
+        }
     }
 
 }
