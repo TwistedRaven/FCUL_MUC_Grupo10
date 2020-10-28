@@ -17,23 +17,23 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-
 import java.util.Random;
 
 public class CanvasFragment extends Fragment {
 
     PaintCanvas paintCanvas;
 
+    GestureListener mGestureListener;
+    GestureDetector mGestureDetector;
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        GestureListener mGestureListener = new GestureListener();
-        GestureDetector mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        mGestureListener = new GestureListener();
+        mGestureDetector = new GestureDetector(getContext(), mGestureListener);
         mGestureDetector.setIsLongpressEnabled(true);
         mGestureDetector.setOnDoubleTapListener(mGestureListener);
-
         paintCanvas = new PaintCanvas(getContext(), null, mGestureDetector);
         mGestureListener.setCanvas(paintCanvas);
 
@@ -117,21 +117,20 @@ public class CanvasFragment extends Fragment {
             //switch aqui em principio para as cores
         }
 
-        public void erase(){
-            paint.setColor(backGroundColor);
-        }
+        public void fillBackground(){
 
-        public void changeBackground(){
-            //Random r = new Random();
-            //backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-            //backGroundColor = Color.RED;
-            int backGroundColorRed = Color.RED;
-            setBackgroundColor(backGroundColorRed);
-            //setBackgroundColor(backGroundColor);
+            setBackgroundColor(backGroundColor);
         }
 
         public void changeStrokeSize(){
             paint.setStrokeWidth(50f);
+        }
+
+        public void canvasErase(){
+
+            path.reset();
+            backGroundColor = Color.WHITE;
+            setBackgroundColor(backGroundColor);
         }
     }
 
@@ -146,14 +145,14 @@ public class CanvasFragment extends Fragment {
         // On Hold Gesture
         @Override
         public void onLongPress(MotionEvent motionEvent) {
-            canvas.changeBackground();
+            canvas.fillBackground();
             Log.d("LongPress","Long Press!");
         }
 
         // On Double Tap
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
-            //canvas.erase();
+            canvas.canvasErase();
             Log.d("DoubleTap","Double Click!");
             return false;
         }
@@ -162,7 +161,7 @@ public class CanvasFragment extends Fragment {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.i("SingleTap", "Single Tap!");
-            canvas.changeStrokeSize();
+            //canvas.changeStrokeSize();
             return false;
         }
         public void changeCanvasColor(int color){ canvas.changeColor(color); }
