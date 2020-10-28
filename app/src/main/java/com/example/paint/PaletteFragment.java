@@ -17,7 +17,17 @@ public class PaletteFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_palette, container, false);
+        View v = inflater.inflate(R.layout.fragment_palette, container, false);
+
+        final Button b = v.findViewById(R.id.color_red);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b.getBackground()).getColor());
+            }
+        });
+
+        return v;
     }
 
     public interface OnPaletteFragmentListener {
@@ -28,7 +38,7 @@ public class PaletteFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof OnPaletteFragmentListener) {
-            OnPaletteFragmentListener onPaletteFragmentListener = (OnPaletteFragmentListener) context;
+            mCallback = (OnPaletteFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnPaletteFragmentListener");
@@ -44,5 +54,9 @@ public class PaletteFragment extends Fragment {
     public void changeCanvasColor(View v){
         Button b = (Button) v;
         mCallback.messageCanvas(((ColorDrawable) b.getBackground()).getColor());
+    }
+
+    public void changeCanvasColor(int color){
+        mCallback.messageCanvas(color);
     }
 }
