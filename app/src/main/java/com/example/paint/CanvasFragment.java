@@ -17,18 +17,31 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-public class CanvasFragment extends Fragment {
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
-    PaintCanvas canvas;
+import java.util.Random;
+
+public class CanvasFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        canvas = new PaintCanvas(getContext());
 
-        return canvas;
+        GestureListener mGestureListener = new GestureListener();
+        GestureDetector mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        mGestureDetector.setIsLongpressEnabled(true);
+        mGestureDetector.setOnDoubleTapListener(mGestureListener);
+
+        PaintCanvas paintCanvas = new PaintCanvas(getContext(), null, mGestureDetector);
+        mGestureListener.setCanvas(paintCanvas);
+
+        return new PaintCanvas(getContext(), null, mGestureDetector);
+        //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
     }
 
-    public static class PaintCanvas extends View {
+
+    public class PaintCanvas extends View implements View.OnTouchListener{
+
         private Paint paint = new Paint();
         private Path path = new Path();
         private int backGroundColor = Color.WHITE;
