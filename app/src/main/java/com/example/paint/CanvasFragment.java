@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,14 +32,24 @@ public class CanvasFragment extends Fragment {
         private Paint paint = new Paint();
         private Path path = new Path();
         private int backGroundColor = Color.WHITE;
+        private GestureDetector mGestureDetector;
 
-        public PaintCanvas(Context context) {
+        /*public PaintCanvas(Context context) {
             super(context);
-            //setOnTouchListener(this);
+            setOnTouchListener(this);
+            setBackgroundColor(backGroundColor);
+            initPaint();
+        }*/
+
+        public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
+            super(context, attrs);
+            this.mGestureDetector = mGestureDetector;
+            setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
             initPaint();
         }
 
+        //Inicializa o stroke da imagem
         private void initPaint() {
             paint.setAntiAlias(true);
             paint.setStrokeWidth(20f);
@@ -53,6 +66,11 @@ public class CanvasFragment extends Fragment {
         @Override
         public boolean performClick() {
             return super.performClick();
+        }
+
+        public boolean onTouch(View v, MotionEvent event) {
+            mGestureDetector.onTouchEvent(event);
+            return false; // let the event go to the rest of the listeners
         }
 
         @Override
@@ -77,8 +95,54 @@ public class CanvasFragment extends Fragment {
             return true;
         }
 
-        private void changeColor(int color){ paint.setColor(color); }
+        public void changeColor(int color){
+            paint.setColor(color);
+            //switch aqui em principio para as cores
+        }
+
+        public void erase(){
+            paint.setColor(backGroundColor);
+        }
+
+        public void changeBackground(){
+            //Random r = new Random();
+            //backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            //setBackgroundColor(backGroundColor);
+            Log.d("BG","in Change Background!");
+            //paint.set(Color.RED);
+        }
     }
 
-    public void changeCanvasColor(int color){ canvas.changeColor(color); }
+    public class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
+
+        private PaintCanvas canvas;
+
+        void setCanvas(PaintCanvas canvas) {
+            this.canvas = canvas;
+        }
+
+        // On Hold Gesture
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+            canvas.changeBackground();
+            Log.d("LongPress","Long Press!");
+        }
+
+        // On Double Tap
+        @Override
+        public boolean onDoubleTap(MotionEvent motionEvent) {
+            //canvas.erase();
+            Log.d("DoubleTap","Double Click!");
+            return false;
+        }
+
+        // On Single Tap
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.i("SingleTap", "Single Tap!");
+            return false;
+        }
+        public void changeCanvasColor(int color){ canvas.changeColor(color); }
+    }
+
 }
