@@ -120,9 +120,14 @@ public class CanvasFragment extends Fragment {
         public void changeBackground(){
             //Random r = new Random();
             //backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
+            //backGroundColor = Color.RED;
+            int backGroundColorRed = Color.RED;
+            setBackgroundColor(backGroundColorRed);
             //setBackgroundColor(backGroundColor);
-            Log.d("BG","in Change Background!");
-            //paint.set(Color.RED);
+        }
+
+        public void changeStrokeSize(){
+            paint.setStrokeWidth(50f);
         }
     }
 
@@ -153,6 +158,7 @@ public class CanvasFragment extends Fragment {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
             Log.i("SingleTap", "Single Tap!");
+            canvas.changeStrokeSize();
             return false;
         }
         public void changeCanvasColor(int color){ canvas.changeColor(color); }
