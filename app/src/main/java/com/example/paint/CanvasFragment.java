@@ -153,6 +153,11 @@ public class CanvasFragment extends Fragment {
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
         }
+
+        public void eraserCanvas() {
+            currentPaintColor = backGroundColor;
+            currentPaint.setColor(currentPaintColor);
+        }
     }
 
     public static class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
@@ -186,9 +191,6 @@ public class CanvasFragment extends Fragment {
             return false;
         }
 
-        public void changeCanvasColor(int color) {
-            canvas.changeColor(color);
-        }
     }
 
 }

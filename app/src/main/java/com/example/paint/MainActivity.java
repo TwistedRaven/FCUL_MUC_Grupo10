@@ -121,4 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void messageCanvas(int color) {
         cFragment.changeCanvasColor(color);
     }
+
+    @Override
+    public void eraserCanvas() {
+        //cFragment.eraserCanvas();
+    }
 }

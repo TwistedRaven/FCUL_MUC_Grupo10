@@ -21,19 +21,26 @@ public class PaletteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_palette, container, false);
 
-        final Button b = v.findViewById(R.id.color_red);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeCanvasColor(((ColorDrawable) b.getBackground()).getColor());
-            }
-        });
-
-        final Button b1 = v.findViewById(R.id.eraser);
+        final Button b1 = v.findViewById(R.id.color_red);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCanvasColor(((ColorDrawable) b1.getBackground()).getColor());
+            }
+        });
+
+        final Button b2 = v.findViewById(R.id.color_black);
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b2.getBackground()).getColor());
+            }
+        });
+        final Button b3 = v.findViewById(R.id.eraser);
+        b3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b3.getBackground()).getColor());
             }
         });
 
@@ -47,6 +54,7 @@ public class PaletteFragment extends Fragment {
 
     public interface OnPaletteFragmentListener {
         void messageCanvas(int color);
+        void eraserCanvas();
     }
 
     @Override
@@ -75,5 +83,6 @@ public class PaletteFragment extends Fragment {
     public void changeCanvasColor(int color){
         mCallback.messageCanvas(color);
     }
+    public void eraserCanvas(){mCallback.eraserCanvas();}
 
 }
