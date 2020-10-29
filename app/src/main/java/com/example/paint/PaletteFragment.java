@@ -13,7 +13,9 @@ import androidx.fragment.app.Fragment;
 
 public class PaletteFragment extends Fragment {
 
-    private OnPaletteFragmentListener mCallback;
+    //Changed to public because of
+    // public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PaletteFragment.OnPaletteFragmentListener {
+    public OnPaletteFragmentListener mCallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

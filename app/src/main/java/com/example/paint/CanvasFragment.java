@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class CanvasFragment extends Fragment {
 
@@ -135,6 +136,8 @@ public class CanvasFragment extends Fragment {
         }
 
         public void fillBackground() {
+            Random r = new Random();
+            backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
             setBackgroundColor(backGroundColor);
         }
 
