@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
 
-      //  if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
-        //}
+        }
 
 
         // Needs to be committed to be loaded into the app
@@ -89,9 +89,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Replace the fragment so it doesn't keep stacking on top of itself
             fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
 
-           // if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
-            //}
+            }
 
             fragmentTransaction.commit();
         }
