@@ -29,6 +29,19 @@ public class PaletteFragment extends Fragment {
             }
         });
 
+        final Button b1 = v.findViewById(R.id.eraser);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b1.getBackground()).getColor());
+            }
+        });
+
+
+
+
+
+
         return v;
     }
 
@@ -53,6 +66,7 @@ public class PaletteFragment extends Fragment {
         mCallback = null;
     }
 
+
     public void changeCanvasColor(View v){
         Button b = (Button) v;
         mCallback.messageCanvas(((ColorDrawable) b.getBackground()).getColor());
@@ -61,4 +75,5 @@ public class PaletteFragment extends Fragment {
     public void changeCanvasColor(int color){
         mCallback.messageCanvas(color);
     }
+
 }

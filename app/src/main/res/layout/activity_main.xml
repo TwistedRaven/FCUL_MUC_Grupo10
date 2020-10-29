@@ -11,12 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         layout="@layout/drawer_toolbar"/>
+
+
     <FrameLayout
         android:layout_marginTop="55sp"
         android:id="@+id/canvas_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="500dp"
         >
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/palette_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"
+        android:layout_alignBottom="@id/canvas_fragment"
+        android:layout_alignParentBottom="true">
     </FrameLayout>
 
     <com.google.android.material.navigation.NavigationView
