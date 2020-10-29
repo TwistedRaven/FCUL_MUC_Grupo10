@@ -17,8 +17,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class CanvasFragment extends Fragment {
@@ -50,11 +50,8 @@ public class CanvasFragment extends Fragment {
 
     public static class PaintCanvas extends View implements View.OnTouchListener {
 
-        private List<Path> paths = new ArrayList<>();
-        private List<Paint> paints = new ArrayList<>();
-
-        private Paint currentPaint = new Paint();
-        private Path currentPath = new Path();
+        private Deque<Line> lines = new LinkedList<>();
+        private Line currentLine;
 
         private int backGroundColor = Color.WHITE;
         private int currentPaintColor = Color.BLACK;
@@ -70,8 +67,8 @@ public class CanvasFragment extends Fragment {
 
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
-            paths.add(currentPath);
-            paints.add(currentPaint);
+            currentLine = new Line(false);
+            lines.add(currentLine);
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
@@ -80,17 +77,20 @@ public class CanvasFragment extends Fragment {
 
         //Inicializa o stroke da imagem
         private void initPaint() {
-            currentPaint.setAntiAlias(true);
-            currentPaint.setStrokeWidth(20f);
-            currentPaint.setColor(currentPaintColor);
-            currentPaint.setStyle(Paint.Style.STROKE);
-            currentPaint.setStrokeJoin(Paint.Join.ROUND);
+            currentLine.getPaint().setAntiAlias(true);
+            currentLine.getPaint().setStrokeWidth(20f);
+            currentLine.getPaint().setColor(currentPaintColor);
+            currentLine.getPaint().setStyle(Paint.Style.STROKE);
+            currentLine.getPaint().setStrokeJoin(Paint.Join.ROUND);
         }
 
         @Override
         protected void onDraw(final Canvas canvas) {
-            for (int i = 0; i < paths.size(); i++) {
-                canvas.drawPath(paths.get(i), paints.get(i)); // draws each path with its paint
+            for (final Line line : lines) {
+                if(line.isFromEraser()) {
+                    line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
+                }
+                canvas.drawPath(line.getPath(), line.getPaint()); // draws each path with its paint
             }
         }
 
@@ -110,14 +110,14 @@ public class CanvasFragment extends Fragment {
             float eventY = event.getY();
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    currentPath.moveTo(eventX, eventY);// updates the path initial point
+                    currentLine.getPath().moveTo(eventX, eventY); // updates the path initial point
                     return true;
                 case MotionEvent.ACTION_MOVE:
-                    currentPath.lineTo(eventX, eventY);// makes a line to the point each time this event is fired
+                    currentLine.getPath().lineTo(eventX, eventY); // makes a line to the point each time this event is fired
                     break;
-                case MotionEvent.ACTION_UP:// when you lift your finger
-                    paths.add(currentPath = new Path());
-                    paints.add(currentPaint = new Paint());
+                case MotionEvent.ACTION_UP: // when you lift your finger
+                    currentLine = new Line(currentPaintColor == backGroundColor);
+                    lines.add(currentLine);
                     initPaint();
                     performClick();
                     break;
@@ -131,7 +131,7 @@ public class CanvasFragment extends Fragment {
 
         public void changeColor(int color) {
             currentPaintColor = color;
-            currentPaint.setColor(currentPaintColor);
+            currentLine.getPaint().setColor(currentPaintColor);
             //switch aqui em principio para as cores
         }
 
@@ -142,21 +142,43 @@ public class CanvasFragment extends Fragment {
         }
 
         public void changeStrokeSize() {
-            currentPaint.setStrokeWidth(50f);
+            currentLine.getPaint().setStrokeWidth(50f);
         }
 
         public void canvasErase() {
-            paths.clear();
-            paints.clear();
-            paths.add(currentPath = new Path());
-            paints.add(currentPaint = new Paint());
+            lines.clear();
+            lines.add(new Line(currentPaintColor == backGroundColor));
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
         }
 
         public void eraserCanvas() {
             currentPaintColor = backGroundColor;
-            currentPaint.setColor(currentPaintColor);
+            currentLine.getPaint().setColor(currentPaintColor);
+        }
+
+        public static class Line {
+            private final Path path;
+            private final Paint paint;
+            private final boolean isFromEraser;
+
+            public Line(boolean isFromEraser) {
+                this.path = new Path();
+                this.paint = new Paint();
+                this.isFromEraser = isFromEraser;
+            }
+
+            public Path getPath() {
+                return path;
+            }
+
+            public Paint getPaint() {
+                return paint;
+            }
+
+            public boolean isFromEraser() {
+                return isFromEraser;
+            }
         }
     }
 

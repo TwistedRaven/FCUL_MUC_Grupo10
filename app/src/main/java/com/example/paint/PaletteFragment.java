@@ -28,7 +28,6 @@ public class PaletteFragment extends Fragment {
                 changeCanvasColor(((ColorDrawable) b1.getBackground()).getColor());
             }
         });
-
         final Button b2 = v.findViewById(R.id.color_black);
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,12 +42,6 @@ public class PaletteFragment extends Fragment {
                 changeCanvasColor(((ColorDrawable) b3.getBackground()).getColor());
             }
         });
-
-
-
-
-
-
         return v;
     }
 
