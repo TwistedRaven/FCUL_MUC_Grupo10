@@ -2,6 +2,7 @@ package com.example.paint;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -16,19 +17,19 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PaletteFragment.OnPaletteFragmentListener {
+    private static final String canvasFragmentBundleKey = "kdoud8hcvduc";
 
     // Handling objects (Drawer layout...)
-
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle actionBarDrawerToggle;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
     // Custom Toolbar - androidx one
-    Toolbar toolbar;
-    NavigationView navigationView;
-    CanvasFragment cFragment;
-    PaletteFragment pFragment;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
+    private CanvasFragment cFragment;
+    private PaletteFragment pFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
@@ -57,22 +58,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // These serve to load the Fragment into this MainActivity
 
         // Load Canvas and Palette Fragment
-        cFragment = new CanvasFragment();
         pFragment = new PaletteFragment();
+        if (savedInstanceState != null) {
+            cFragment = (CanvasFragment) getSupportFragmentManager().getFragment(savedInstanceState, canvasFragmentBundleKey);
+            if (cFragment == null) {
+                throw new IllegalArgumentException("Bundle returned null CanvasFragment.");
+            }
+        } else {
+            cFragment = new CanvasFragment();
+            fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
+        }
 
         // You need to indicate the container fragment where they need to appear
-
-        fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
         }
 
-
         // Needs to be committed to be loaded into the app
-
         fragmentTransaction.commit();
+    }
 
+    @Override
+    protected void onSaveInstanceState(final @NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, canvasFragmentBundleKey, cFragment);
     }
 
     @Override
@@ -111,9 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fragmentTransaction.replace(R.id.canvas_fragment, sFragment);
             fragmentTransaction.commit();
         }
-
         return true;
-
     }
 
 

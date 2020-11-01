@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.Deque;
@@ -22,11 +25,12 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class CanvasFragment extends Fragment {
+    private static final String canvasLinesBundleKey = "0wskkf37ed";
 
-    PaintCanvas paintCanvas;
+    private PaintCanvas paintCanvas;
 
-    GestureListener mGestureListener;
-    GestureDetector mGestureDetector;
+    private GestureListener mGestureListener;
+    private GestureDetector mGestureDetector;
 
 
     @Override
@@ -43,12 +47,35 @@ public class CanvasFragment extends Fragment {
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
     }
 
+    @Override
+    public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            paintCanvas.lines.clear();
+            final Parcelable[] lines = savedInstanceState.getParcelableArray(canvasLinesBundleKey);
+            if (lines == null) {
+                throw new IllegalArgumentException("Bundle returned null Lines array.");
+            }
+            for (final Parcelable line : lines) {
+                paintCanvas.lines.addLast((PaintCanvas.Line) line);
+            }
+            paintCanvas.lines.addLast(paintCanvas.currentLine);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        final Parcelable[] canvasLines = paintCanvas.lines.toArray(new PaintCanvas.Line[0]);
+        outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
+    }
+
     public void changeCanvasColor(int color) {
         paintCanvas.changeColor(color);
     }
 
 
-    public static class PaintCanvas extends View implements View.OnTouchListener {
+    private static class PaintCanvas extends View implements View.OnTouchListener {
 
         private Deque<Line> lines = new LinkedList<>();
         private Line currentLine;
@@ -68,7 +95,7 @@ public class CanvasFragment extends Fragment {
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
             currentLine = new Line(false);
-            lines.add(currentLine);
+            lines.addLast(currentLine);
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
@@ -87,7 +114,7 @@ public class CanvasFragment extends Fragment {
         @Override
         protected void onDraw(final Canvas canvas) {
             for (final Line line : lines) {
-                if(line.isFromEraser()) {
+                if (line.isFromEraser()) {
                     line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
                 }
                 canvas.drawPath(line.getPath(), line.getPaint()); // draws each path with its paint
@@ -117,7 +144,7 @@ public class CanvasFragment extends Fragment {
                     break;
                 case MotionEvent.ACTION_UP: // when you lift your finger
                     currentLine = new Line(currentPaintColor == backGroundColor);
-                    lines.add(currentLine);
+                    lines.addLast(currentLine);
                     initPaint();
                     performClick();
                     break;
@@ -147,7 +174,7 @@ public class CanvasFragment extends Fragment {
 
         public void canvasErase() {
             lines.clear();
-            lines.add(new Line(currentPaintColor == backGroundColor));
+            lines.addLast(new Line(currentPaintColor == backGroundColor));
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
         }
@@ -157,7 +184,18 @@ public class CanvasFragment extends Fragment {
             currentLine.getPaint().setColor(currentPaintColor);
         }
 
-        public static class Line {
+        private static class Line implements Parcelable {
+            public static final Parcelable.Creator<Line> CREATOR = new Parcelable.Creator<Line>() {
+                @Override
+                public Line createFromParcel(final Parcel source) {
+                    return new Line(source);
+                }
+
+                @Override
+                public Line[] newArray(final int size) {
+                    return new Line[size];
+                }
+            };
             private final Path path;
             private final Paint paint;
             private final boolean isFromEraser;
@@ -166,6 +204,24 @@ public class CanvasFragment extends Fragment {
                 this.path = new Path();
                 this.paint = new Paint();
                 this.isFromEraser = isFromEraser;
+            }
+
+            public Line(final @NonNull Parcel input) {
+                path = (Path) input.readValue(Path.class.getClassLoader());
+                paint = (Paint) input.readValue(Paint.class.getClassLoader());
+                isFromEraser = input.readInt() != 0; // readBoolean() requires API 29
+            }
+
+            @Override
+            public void writeToParcel(final Parcel dest, final int flags) {
+                dest.writeValue(path);
+                dest.writeValue(paint);
+                dest.writeInt(isFromEraser ? 1 : 0); // writeBoolean() requires API 29
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
             }
 
             public Path getPath() {
