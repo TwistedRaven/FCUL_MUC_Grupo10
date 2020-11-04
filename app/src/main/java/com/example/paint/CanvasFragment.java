@@ -44,8 +44,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private boolean isAccelerometerSensorAvailable, itIsNotFirstTime = false;
+    private SensorEventListener lightEventListener;
+    private boolean isLightSensorAvailable;
     private float currentX, currentY, currentZ, lastX, lastY, lastZ;
     private float xDifference, yDifference, zDifference;
+    private Sensor lightSensor;
+    private float maxValue;
+
 
     private Vibrator vibrator;
 
@@ -71,8 +76,45 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             Log.d("Accelerometer", "Accelerometer is not initialized!");
         }
 
-        return paintCanvas;
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT) != null) {
+            lightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+            isLightSensorAvailable = true;
+            Log.d("Light", "Light is initialized!");
+        } else {
+            isLightSensorAvailable = false;
+            Log.d("Light", "Light is not initialized!");
+        }
+
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
+        lightEventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                float value = sensorEvent.values[0];
+                Log.d("Light", Float.toString(value));
+                int newValue = 0;
+
+                if(value >= 20000 && value < 25000) {
+                    newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.75f);
+                }
+                if(value >= 25000) {
+                    newValue = manipulateColor(paintCanvas.getBackgroundColor(), 1f);
+                }
+                if(value < 20000 && value >= 15000) {
+                    newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.5f);
+                }
+                if(value < 15000) {
+                    newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.25f);
+                }
+                paintCanvas.setBackgroundColor(newValue);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
+
+        return paintCanvas;
     }
 
     @Override
@@ -141,6 +183,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         if (isAccelerometerSensorAvailable) {
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
+        mSensorManager.registerListener(lightEventListener, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
@@ -150,6 +193,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         if (!isAccelerometerSensorAvailable) {
             mSensorManager.unregisterListener(this);
         }
+        mSensorManager.unregisterListener(lightEventListener);
     }
 
     @Override
@@ -350,6 +394,8 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             }
 
         }
+
+
     }
 
     public static class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {
@@ -382,6 +428,17 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             return false;
         }
 
+    }
+
+    public static int manipulateColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r,255),
+                Math.min(g,255),
+                Math.min(b,255));
     }
 
 }
