@@ -22,14 +22,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 public class CanvasFragment extends Fragment implements SensorEventListener {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
@@ -105,9 +104,15 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
                (xDifference > shakeThreshold && zDifference > shakeThreshold) ||
                (yDifference > shakeThreshold && zDifference > shakeThreshold)){
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                     paintCanvas.canvasErase();
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(getContext(), "Erased!", duration);
+                    toast.show();
+                    vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
+                    int duration = Toast.LENGTH_SHORT;
+                    Toast toast = Toast.makeText(getContext(), "Erased legacy!", duration);
+                    toast.show();
                     vibrator.vibrate(1000);
                     //
                 }
@@ -155,6 +160,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         paintCanvas.changeColor(color);
     }
 
+    public void eraseCanvas() {
+        paintCanvas.changeColor(paintCanvas.getBackgroundColor());
+    }
+
+    public void undo() { paintCanvas.undo(); }
+
+
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
         private Deque<Line> lines = new LinkedList<>();
@@ -186,6 +198,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
         @Override
         protected void onDraw(final Canvas canvas) {
+            Log.d("Draw", "Draw!");
             for (final Line line : lines) {
                 if (line.isFromEraser()) {
                     line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
@@ -236,9 +249,16 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
 
         public void fillBackground() {
+            boolean eraser = backGroundColor == currentPaintColor;
             Random r = new Random();
             backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
             setBackgroundColor(backGroundColor);
+            if (eraser)
+                changeColor(backGroundColor);
+        }
+
+        public void changeStrokeSize() {
+            currentLine.getPaint().setStrokeWidth(10f);
         }
 
         public void canvasErase() {
@@ -248,10 +268,12 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             setBackgroundColor(backGroundColor);
         }
 
-        public void eraserCanvas() {
-            currentPaintColor = backGroundColor;
-            currentLine.getPaint().setColor(currentPaintColor);
+        public void undo(){
+            if (!lines.isEmpty())
+                lines.removeLast();
         }
+
+        public int getBackgroundColor(){ return backGroundColor; }
 
         private static class Line implements Parcelable {
             public static final Parcelable.Creator<Line> CREATOR = new Parcelable.Creator<Line>() {
@@ -304,6 +326,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             public boolean isFromEraser() {
                 return isFromEraser;
             }
+
         }
     }
 

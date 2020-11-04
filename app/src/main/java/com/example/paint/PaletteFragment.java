@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -35,11 +36,20 @@ public class PaletteFragment extends Fragment {
                 changeCanvasColor(((ColorDrawable) b2.getBackground()).getColor());
             }
         });
-        final Button b3 = v.findViewById(R.id.eraser);
-        b3.setOnClickListener(new View.OnClickListener() {
+
+        final ImageButton eraser = v.findViewById(R.id.eraser);
+        eraser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeCanvasColor(((ColorDrawable) b3.getBackground()).getColor());
+               eraserCanvas();
+            }
+        });
+
+        final ImageButton undo = v.findViewById(R.id.undo);
+        undo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                undo();
             }
         });
         return v;
@@ -48,6 +58,7 @@ public class PaletteFragment extends Fragment {
     public interface OnPaletteFragmentListener {
         void messageCanvas(int color);
         void eraserCanvas();
+        void undo();
     }
 
     @Override
@@ -67,7 +78,6 @@ public class PaletteFragment extends Fragment {
         mCallback = null;
     }
 
-
     public void changeCanvasColor(View v){
         Button b = (Button) v;
         mCallback.messageCanvas(((ColorDrawable) b.getBackground()).getColor());
@@ -77,5 +87,6 @@ public class PaletteFragment extends Fragment {
         mCallback.messageCanvas(color);
     }
     public void eraserCanvas(){mCallback.eraserCanvas();}
+    public void undo(){mCallback.undo();}
 
 }
