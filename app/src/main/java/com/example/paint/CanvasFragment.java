@@ -34,7 +34,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class CanvasFragment extends Fragment implements SensorEventListener {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
-    private final float shakeThreshold = 100f; //7f
+    private final float moveThreshold = 7f;
 
     private PaintCanvas paintCanvas;
 
@@ -90,7 +90,6 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
     }
 
-    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         currentX = sensorEvent.values[0];
         currentY = sensorEvent.values[1];
@@ -102,19 +101,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             zDifference = Math.abs(lastZ - currentZ);
 
             // Need to check if any of these 3 has a value more than 5. If so, we will vibrate the phone
-            if ((xDifference > shakeThreshold && yDifference > shakeThreshold) ||
-                    (xDifference > shakeThreshold && zDifference > shakeThreshold) ||
-                    (yDifference > shakeThreshold && zDifference > shakeThreshold)) {
+            if ((Math.abs(xDifference) > moveThreshold)) {
+                Log.d("Erase", "Past first if!");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     paintCanvas.canvasErase();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(getContext(), "Erased!", duration);
-                    toast.show();
+                    Log.d("Erase", "canvasErase is finished!");
                     vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(getContext(), "Erased legacy!", duration);
-                    toast.show();
                     vibrator.vibrate(1000);
                     //
                 }
