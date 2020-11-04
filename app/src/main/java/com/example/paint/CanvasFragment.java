@@ -34,7 +34,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class CanvasFragment extends Fragment implements SensorEventListener {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
-    private final float shakeThreshold = 100f; //7f
+    private final float moveThreshold = 7f;
 
     private PaintCanvas paintCanvas;
 
@@ -121,19 +121,17 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            paintCanvas.lines.clear();
+            paintCanvas.finishedLines.clear();
             final Parcelable[] lines = savedInstanceState.getParcelableArray(canvasLinesBundleKey);
             if (lines == null) {
                 throw new IllegalArgumentException("Bundle returned null Lines array.");
             }
             for (final Parcelable line : lines) {
-                paintCanvas.lines.addLast((PaintCanvas.Line) line);
+                paintCanvas.finishedLines.addLast((PaintCanvas.Line) line);
             }
-            paintCanvas.lines.addLast(paintCanvas.currentLine);
         }
     }
 
-    @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         currentX = sensorEvent.values[0];
         currentY = sensorEvent.values[1];
@@ -145,19 +143,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             zDifference = Math.abs(lastZ - currentZ);
 
             // Need to check if any of these 3 has a value more than 5. If so, we will vibrate the phone
-            if ((xDifference > shakeThreshold && yDifference > shakeThreshold) ||
-                    (xDifference > shakeThreshold && zDifference > shakeThreshold) ||
-                    (yDifference > shakeThreshold && zDifference > shakeThreshold)) {
+            if ((Math.abs(xDifference) > moveThreshold)) {
+                Log.d("Erase", "Past first if!");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     paintCanvas.canvasErase();
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(getContext(), "Erased!", duration);
-                    toast.show();
+                    Log.d("Erase", "canvasErase is finished!");
                     vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 } else {
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast toast = Toast.makeText(getContext(), "Erased legacy!", duration);
-                    toast.show();
                     vibrator.vibrate(1000);
                     //
                 }
@@ -173,7 +165,6 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Override
@@ -199,7 +190,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     @Override
     public void onSaveInstanceState(final @NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        final Parcelable[] canvasLines = paintCanvas.lines.toArray(new PaintCanvas.Line[0]);
+        final Parcelable[] canvasLines = paintCanvas.finishedLines.toArray(new PaintCanvas.Line[0]);
         outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
     }
 
@@ -218,7 +209,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
-        private Deque<Line> lines = new LinkedList<>();
+        private Deque<Line> finishedLines = new LinkedList<>();
         private Line currentLine;
 
         private int backGroundColor = Color.WHITE;
@@ -229,7 +220,6 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
             currentLine = new Line(false);
-            lines.addLast(currentLine);
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
@@ -248,12 +238,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         @Override
         protected void onDraw(final Canvas canvas) {
             //Log.d("Draw", "Draw!");
-            for (final Line line : lines) {
+            for (final Line line : finishedLines) {
                 if (line.isFromEraser()) {
                     line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
                 }
                 canvas.drawPath(line.getPath(), line.getPaint()); // draws each path with its paint
             }
+            canvas.drawPath(currentLine.getPath(), currentLine.getPaint());
         }
 
         @Override
@@ -278,8 +269,8 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
                     currentLine.getPath().lineTo(eventX, eventY); // makes a line to the point each time this event is fired
                     break;
                 case MotionEvent.ACTION_UP: // when you lift your finger
+                    finishedLines.addLast(currentLine);
                     currentLine = new Line(currentPaintColor == backGroundColor);
-                    lines.addLast(currentLine);
                     initPaint();
                     performClick();
                     break;
@@ -317,24 +308,14 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
 
         public void canvasErase() {
-            lines.clear();
+            finishedLines.clear();
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
-            lines.addLast(new Line(currentPaintColor == backGroundColor));
+            currentLine = new Line(currentPaintColor == backGroundColor);
         }
 
         public void undo() {
-            throw new UnsupportedOperationException("Working on it");
-            // there will always be the current line
-            /*if (lines.size() > 1) {
-                lines.removeLast();
-                currentLine = lines.getLast();
-            } else {
-                lines.clear();
-                currentLine = new Line(currentPaintColor == backGroundColor);
-                lines.addLast(currentLine);
-            }
-            setBackgroundColor(backGroundColor); // update ??*/
+            finishedLines.pollLast();
         }
 
         public int getBackgroundColor() {
