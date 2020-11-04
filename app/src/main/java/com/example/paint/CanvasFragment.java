@@ -20,9 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 public class CanvasFragment extends Fragment {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
@@ -74,6 +72,12 @@ public class CanvasFragment extends Fragment {
         paintCanvas.changeColor(color);
     }
 
+    public void eraseCanvas() {
+        paintCanvas.changeColor(paintCanvas.getBackgroundColor());
+    }
+
+    public void undo() { paintCanvas.undo(); }
+
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
@@ -84,13 +88,6 @@ public class CanvasFragment extends Fragment {
         private int currentPaintColor = Color.BLACK;
 
         private GestureDetector mGestureDetector;
-
-        /*public PaintCanvas(Context context) {
-            super(context);
-            setOnTouchListener(this);
-            setBackgroundColor(backGroundColor);
-            initPaint();
-        }*/
 
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
@@ -163,9 +160,12 @@ public class CanvasFragment extends Fragment {
         }
 
         public void fillBackground() {
+            boolean eraser = backGroundColor == currentPaintColor;
             Random r = new Random();
             backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
             setBackgroundColor(backGroundColor);
+            if (eraser)
+                changeColor(backGroundColor);
         }
 
         public void changeStrokeSize() {
@@ -179,10 +179,9 @@ public class CanvasFragment extends Fragment {
             setBackgroundColor(backGroundColor);
         }
 
-        public void eraserCanvas() {
-            currentPaintColor = backGroundColor;
-            currentLine.getPaint().setColor(currentPaintColor);
-        }
+        public void undo(){ lines.removeLast(); }
+
+        public int getBackgroundColor(){ return backGroundColor; }
 
         private static class Line implements Parcelable {
             public static final Parcelable.Creator<Line> CREATOR = new Parcelable.Creator<Line>() {
@@ -235,6 +234,7 @@ public class CanvasFragment extends Fragment {
             public boolean isFromEraser() {
                 return isFromEraser;
             }
+
         }
     }
 

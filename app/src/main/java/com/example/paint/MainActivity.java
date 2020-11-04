@@ -131,7 +131,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void eraserCanvas() {
-        //cFragment.eraserCanvas();
-    }
+    public void eraserCanvas() { cFragment.eraseCanvas(); }
+
+    @Override
+    public void undo() { cFragment.undo(); }
 }
