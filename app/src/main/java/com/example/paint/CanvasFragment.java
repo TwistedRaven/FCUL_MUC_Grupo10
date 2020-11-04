@@ -32,6 +32,7 @@ import java.util.*;
 
 public class CanvasFragment extends Fragment implements SensorEventListener {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
+    private final float shakeThreshold = 7f;
 
     private PaintCanvas paintCanvas;
 
@@ -43,7 +44,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     private boolean isAccelerometerSensorAvailable, itIsNotFirstTime = false;
     private float currentX, currentY, currentZ, lastX, lastY, lastZ;
     private float xDifference, yDifference, zDifference;
-    private float shakeThreshold = 7f;
+
     private Vibrator vibrator;
 
     @Override

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -110,6 +111,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             AboutFragment aFragment = new AboutFragment();
+            Fragment palette = getSupportFragmentManager().findFragmentById(R.id.palette_fragment);
+            if (palette != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                fragmentTransaction.remove(getSupportFragmentManager().findFragmentById(R.id.palette_fragment)); //Container do Palette fragment
+            }
             fragmentTransaction.replace(R.id.canvas_fragment, aFragment);
             fragmentTransaction.commit();
         }
@@ -118,6 +123,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             SettingsFragment sFragment = new SettingsFragment();
+            Fragment palette = getSupportFragmentManager().findFragmentById(R.id.palette_fragment);
+            if (palette != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                fragmentTransaction.remove(palette); //Container do Palette fragment
+            }
             fragmentTransaction.replace(R.id.canvas_fragment, sFragment);
             fragmentTransaction.commit();
         }
