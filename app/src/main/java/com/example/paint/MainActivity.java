@@ -17,7 +17,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PaletteFragment.OnPaletteFragmentListener {
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener, PaletteFragment.OnPaletteFragmentListener {
     private static final String canvasFragmentBundleKey = "kdoud8hcvduc";
 
     // Handling objects (Drawer layout...)
