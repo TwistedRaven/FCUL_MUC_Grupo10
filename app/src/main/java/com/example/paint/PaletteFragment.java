@@ -1,8 +1,10 @@
 package com.example.paint;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class PaletteFragment extends Fragment {
 
@@ -34,6 +38,22 @@ public class PaletteFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 changeCanvasColor(((ColorDrawable) b2.getBackground()).getColor());
+            }
+        });
+        final ImageButton customColor = v.findViewById(R.id.customColor);
+        customColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(getContext(), Color.BLACK, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onCancel(AmbilWarnaDialog dialog) {}
+
+                    @Override
+                    public void onOk(AmbilWarnaDialog dialog, int color) {
+                        changeCanvasColor(color);
+                    }
+                });
+                colorPicker.show();
             }
         });
 

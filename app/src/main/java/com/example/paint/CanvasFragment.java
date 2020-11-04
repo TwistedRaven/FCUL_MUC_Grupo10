@@ -30,6 +30,8 @@ import androidx.fragment.app.Fragment;
 
 import java.util.*;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 public class CanvasFragment extends Fragment implements SensorEventListener {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
     private final float shakeThreshold = 100f; //7f
@@ -253,9 +255,17 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
 
         public void fillBackground() {
-            Random r = new Random();
-            backGroundColor = Color.rgb(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-            setBackgroundColor(backGroundColor);
+            AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(getContext(), Color.WHITE, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                @Override
+                public void onCancel(AmbilWarnaDialog dialog) {}
+
+                @Override
+                public void onOk(AmbilWarnaDialog dialog, int color) {
+                    backGroundColor = color;
+                    setBackgroundColor(backGroundColor);
+                }
+            });
+            colorPicker.show();
         }
 
         public void changeStrokeSize() {
