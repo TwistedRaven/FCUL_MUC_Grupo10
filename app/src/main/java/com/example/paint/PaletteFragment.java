@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -36,7 +37,7 @@ public class PaletteFragment extends Fragment {
             }
         });
 
-        final Button eraser = v.findViewById(R.id.eraser);
+        final ImageButton eraser = v.findViewById(R.id.eraser);
         eraser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,13 +45,13 @@ public class PaletteFragment extends Fragment {
             }
         });
 
-        /*final Button undo = v.findViewById(R.id.undo);
+        final ImageButton undo = v.findViewById(R.id.undo);
         undo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 undo();
             }
-        });*/
+        });
         return v;
     }
 

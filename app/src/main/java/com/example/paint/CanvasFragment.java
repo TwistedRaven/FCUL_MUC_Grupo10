@@ -110,6 +110,7 @@ public class CanvasFragment extends Fragment {
 
         @Override
         protected void onDraw(final Canvas canvas) {
+            Log.d("Draw", "Draw!");
             for (final Line line : lines) {
                 if (line.isFromEraser()) {
                     line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
@@ -169,7 +170,7 @@ public class CanvasFragment extends Fragment {
         }
 
         public void changeStrokeSize() {
-            currentLine.getPaint().setStrokeWidth(50f);
+            currentLine.getPaint().setStrokeWidth(10f);
         }
 
         public void canvasErase() {
@@ -179,7 +180,10 @@ public class CanvasFragment extends Fragment {
             setBackgroundColor(backGroundColor);
         }
 
-        public void undo(){ lines.removeLast(); }
+        public void undo(){
+            if (!lines.isEmpty())
+                lines.removeLast();
+        }
 
         public int getBackgroundColor(){ return backGroundColor; }
 
