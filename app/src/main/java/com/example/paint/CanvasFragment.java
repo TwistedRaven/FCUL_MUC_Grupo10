@@ -79,15 +79,14 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     public void onActivityCreated(final @Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            paintCanvas.lines.clear();
+            paintCanvas.finishedLines.clear();
             final Parcelable[] lines = savedInstanceState.getParcelableArray(canvasLinesBundleKey);
             if (lines == null) {
                 throw new IllegalArgumentException("Bundle returned null Lines array.");
             }
             for (final Parcelable line : lines) {
-                paintCanvas.lines.addLast((PaintCanvas.Line) line);
+                paintCanvas.finishedLines.addLast((PaintCanvas.Line) line);
             }
-            paintCanvas.lines.addLast(paintCanvas.currentLine);
         }
     }
 
@@ -131,7 +130,6 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Override
@@ -155,7 +153,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     @Override
     public void onSaveInstanceState(final @NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        final Parcelable[] canvasLines = paintCanvas.lines.toArray(new PaintCanvas.Line[0]);
+        final Parcelable[] canvasLines = paintCanvas.finishedLines.toArray(new PaintCanvas.Line[0]);
         outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
     }
 
@@ -174,7 +172,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
-        private Deque<Line> lines = new LinkedList<>();
+        private Deque<Line> finishedLines = new LinkedList<>();
         private Line currentLine;
 
         private int backGroundColor = Color.WHITE;
@@ -185,7 +183,6 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         public PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector) {
             super(context, attrs);
             currentLine = new Line(false);
-            lines.addLast(currentLine);
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
@@ -204,12 +201,13 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         @Override
         protected void onDraw(final Canvas canvas) {
             //Log.d("Draw", "Draw!");
-            for (final Line line : lines) {
+            for (final Line line : finishedLines) {
                 if (line.isFromEraser()) {
                     line.getPaint().setColor(backGroundColor); // lines from eraser need to be the same color as background
                 }
                 canvas.drawPath(line.getPath(), line.getPaint()); // draws each path with its paint
             }
+            canvas.drawPath(currentLine.getPath(), currentLine.getPaint());
         }
 
         @Override
@@ -234,8 +232,8 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
                     currentLine.getPath().lineTo(eventX, eventY); // makes a line to the point each time this event is fired
                     break;
                 case MotionEvent.ACTION_UP: // when you lift your finger
+                    finishedLines.addLast(currentLine);
                     currentLine = new Line(currentPaintColor == backGroundColor);
-                    lines.addLast(currentLine);
                     initPaint();
                     performClick();
                     break;
@@ -273,24 +271,14 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
 
         public void canvasErase() {
-            lines.clear();
+            finishedLines.clear();
             backGroundColor = Color.WHITE;
             setBackgroundColor(backGroundColor);
-            lines.addLast(new Line(currentPaintColor == backGroundColor));
+            currentLine = new Line(currentPaintColor == backGroundColor);
         }
 
         public void undo() {
-            throw new UnsupportedOperationException("Working on it");
-            // there will always be the current line
-            /*if (lines.size() > 1) {
-                lines.removeLast();
-                currentLine = lines.getLast();
-            } else {
-                lines.clear();
-                currentLine = new Line(currentPaintColor == backGroundColor);
-                lines.addLast(currentLine);
-            }
-            setBackgroundColor(backGroundColor); // update ??*/
+            finishedLines.pollLast();
         }
 
         public int getBackgroundColor() {
