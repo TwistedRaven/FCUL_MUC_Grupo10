@@ -226,10 +226,7 @@ public class CanvasFragment extends Fragment {
         paintCanvas.changeColor(paintCanvas.getBackgroundColor());
     }
 
-    public void undo() {
-        paintCanvas.undo();
-        paintCanvas.invalidate();
-    }
+    public void undo() { paintCanvas.undo(); }
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
@@ -322,6 +319,7 @@ public class CanvasFragment extends Fragment {
                 public void onOk(AmbilWarnaDialog dialog, int color) {
                     backGroundColor = color;
                     setBackgroundColor(backGroundColor);
+                    invalidate();
                 }
             });
             colorPicker.show();
@@ -340,6 +338,7 @@ public class CanvasFragment extends Fragment {
 
         public void undo() {
             finishedLines.pollLast();
+            invalidate();
         }
 
         public int getBackgroundColor() {
