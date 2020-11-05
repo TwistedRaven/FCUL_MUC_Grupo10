@@ -37,7 +37,7 @@ import static android.content.res.Configuration.*;
 
 public class CanvasFragment extends Fragment {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
-    private float moveThreshold = 1.5f;
+    private float moveThreshold = 1200f;
     //private float moveThreshold = 7f;
 
     private PaintCanvas paintCanvas;
@@ -114,6 +114,9 @@ public class CanvasFragment extends Fragment {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.25f);
                 }
                 paintCanvas.setBackgroundColor(newValue);
+                //newValue = paintCanvas.backgroundColor;
+                eraseCanvas();
+                paintCanvas.invalidate();
             }
 
             @Override
