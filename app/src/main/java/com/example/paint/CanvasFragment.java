@@ -1,6 +1,7 @@
 package com.example.paint;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -32,9 +33,12 @@ import java.util.*;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class CanvasFragment extends Fragment implements SensorEventListener {
+import static android.content.res.Configuration.*;
+
+public class CanvasFragment extends Fragment {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
-    private final float moveThreshold = 7f;
+    private float moveThreshold = 1.5f;
+    //private float moveThreshold = 7f;
 
     private PaintCanvas paintCanvas;
 
@@ -42,17 +46,21 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
     private GestureDetector mGestureDetector;
 
     private SensorManager mSensorManager;
+
     private Sensor mAccelerometer;
     private boolean isAccelerometerSensorAvailable, itIsNotFirstTime = false;
-    private SensorEventListener lightEventListener;
-    private boolean isLightSensorAvailable;
-    private float currentX, currentY, currentZ, lastX, lastY, lastZ;
-    private float xDifference, yDifference, zDifference;
-    private Sensor lightSensor;
-    private float maxValue;
 
+    private float lastX, lastY, lastZ;
+    private float xDifference, yDifference, zDifference;
 
     private Vibrator vibrator;
+
+    private SensorEventListener lightEventListener, shakeEventListener;
+
+    private boolean isLightSensorAvailable;
+    private Sensor lightSensor;
+
+    private Configuration configuration;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,7 +75,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         vibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
 
-        if (mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+        if (mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null) {
             mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             isAccelerometerSensorAvailable = true;
             Log.d("Accelerometer", "Accelerometer is initialized!");
@@ -114,6 +122,57 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
             }
         };
 
+        shakeEventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                float currentX = sensorEvent.values[0];
+                float currentY = sensorEvent.values[1];
+                float currentZ = sensorEvent.values[2];
+                //Log.d("CurrentX", Float.toString(currentX));
+                //Log.d("CurrentY", Float.toString(currentY));
+                //Log.d("CurrentZ", Float.toString(currentZ));
+
+                if (itIsNotFirstTime) {
+                    xDifference = Math.abs(lastX - currentX);
+                    yDifference = Math.abs(lastY - currentY);
+                    zDifference = Math.abs(lastZ - currentZ);
+
+                    //Log.d("xDifference", Float.toString(xDifference));
+                    //Log.d("yDifference", Float.toString(yDifference));
+                    //Log.d("zDifference", Float.toString(zDifference));
+
+                    // if ((Math.abs(xDifference) > moveThreshold)) {
+
+                    // if ((xDifference > moveThreshold && yDifference > moveThreshold) ||
+                    // (xDifference > moveThreshold && zDifference > moveThreshold) ||
+                    // (yDifference > moveThreshold && zDifference > moveThreshold)) {
+
+                        if ((xDifference > moveThreshold && yDifference > moveThreshold) ||
+                        (xDifference > moveThreshold && zDifference > moveThreshold) ||
+                         (yDifference > moveThreshold && zDifference > moveThreshold)) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                paintCanvas.canvasErase();
+                                paintCanvas.invalidate();
+
+                                Log.d("Done", "Done!");
+                                vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+                            } else {
+                                vibrator.vibrate(1000);
+                            }
+                        }
+                }
+
+                lastX = currentX;
+                lastY = currentY;
+                lastZ = currentZ;
+                itIsNotFirstTime = true;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+
         return paintCanvas;
     }
 
@@ -132,47 +191,12 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         }
     }
 
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        currentX = sensorEvent.values[0];
-        currentY = sensorEvent.values[1];
-        currentZ = sensorEvent.values[2];
-
-        if (itIsNotFirstTime) {
-            xDifference = Math.abs(lastX - currentX);
-            yDifference = Math.abs(lastY - currentY);
-            zDifference = Math.abs(lastZ - currentZ);
-
-            // Need to check if any of these 3 has a value more than 5. If so, we will vibrate the phone
-            if ((Math.abs(xDifference) > moveThreshold)) {
-                Log.d("Erase", "Past first if!");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    paintCanvas.canvasErase();
-                    Log.d("Erase", "canvasErase is finished!");
-                    vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
-                } else {
-                    vibrator.vibrate(1000);
-                    //
-                }
-
-            }
-        }
-
-        lastX = currentX;
-        lastY = currentY;
-        lastZ = currentZ;
-        itIsNotFirstTime = true;
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-    }
-
     @Override
     public void onResume() {
         super.onResume();
 
         if (isAccelerometerSensorAvailable) {
-            mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(shakeEventListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         }
         mSensorManager.registerListener(lightEventListener, lightSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
@@ -182,7 +206,7 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
         super.onPause();
 
         if (!isAccelerometerSensorAvailable) {
-            mSensorManager.unregisterListener(this);
+            mSensorManager.unregisterListener(shakeEventListener);
         }
         mSensorManager.unregisterListener(lightEventListener);
     }
@@ -204,8 +228,8 @@ public class CanvasFragment extends Fragment implements SensorEventListener {
 
     public void undo() {
         paintCanvas.undo();
+        paintCanvas.invalidate();
     }
-
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
