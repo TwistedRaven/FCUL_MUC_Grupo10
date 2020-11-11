@@ -52,7 +52,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 if (location != null) {
                     mLastLocation = location;
                     LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(realTime));
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
                 }
             }
@@ -82,6 +81,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
+
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.setMyLocationEnabled(true);
     }
@@ -95,33 +95,17 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         int permission = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
         if (permission == PackageManager.PERMISSION_GRANTED) {
-            // Request location updates and when an update is
-            // received, store the location in Firebase
             client.requestLocationUpdates(request, new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     Location location = locationResult.getLastLocation();
                     if (location != null) {
-                        mMap.clear();
                         mLastLocation = location;
                         LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(realTime).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
                     }
                 }
             }, null);
         }
     }
-
-    /*
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        if (location != null) {
-            mLastLocation = location;
-            LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(realTime).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
-        }
-    }
-    */
 }
