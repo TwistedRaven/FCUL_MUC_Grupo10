@@ -21,19 +21,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 @SuppressLint("MissingPermission")
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     Location mLastLocation;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationProviderClient;
+
+
+
 
 
 
@@ -53,6 +57,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 }
             }
         });
+
+        requestLocationUpdates();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -77,6 +83,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
+        mMap.setMyLocationEnabled(true);
     }
 
     private void requestLocationUpdates() {
@@ -95,9 +102,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
                 public void onLocationResult(LocationResult locationResult) {
                     Location location = locationResult.getLastLocation();
                     if (location != null) {
+                        mMap.clear();
                         mLastLocation = location;
                         LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(realTime));
+                        mMap.addMarker(new MarkerOptions().position(realTime).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
                     }
                 }
@@ -105,13 +113,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback,
         }
     }
 
+    /*
     @Override
     public void onLocationChanged(@NonNull Location location) {
         if (location != null) {
             mLastLocation = location;
             LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(realTime));
+            mMap.addMarker(new MarkerOptions().position(realTime).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
         }
     }
+    */
 }
