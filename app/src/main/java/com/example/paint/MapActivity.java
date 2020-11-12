@@ -8,6 +8,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -47,17 +49,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private ArrayList<LatLng> points; //Creating an array List for the points to which the path will be drawn
     Polyline line; //The polyline in specific.
 
+    Button button;
 
-
-
-
+    public boolean isDrawingButtonPressed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_map);
+
 
         points = new ArrayList<LatLng>();
-        setContentView(R.layout.activity_map);
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
             @Override
@@ -76,6 +79,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        button = findViewById(R.id.drawing_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!isDrawingButtonPressed){
+                    isDrawingButtonPressed = true;
+                    button.setText("Stop Drawing");
+                } else {
+                    isDrawingButtonPressed = false;
+                    button.setText("Start Drawing");
+                }
+            }
+        });
 
     }
 
@@ -139,9 +155,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
 
-                    LatLng latLng = new LatLng(latitude, longitude);
-                    points.add(latLng);
-                    redrawLine();
+                    if(isDrawingButtonPressed == true) {
+                        LatLng latLng = new LatLng(latitude, longitude);
+                        points.add(latLng);
+                        redrawLine();
+                    }
 
                     if (location != null) {
                         mLastLocation = location;
