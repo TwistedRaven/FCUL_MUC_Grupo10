@@ -152,22 +152,21 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 public void onLocationResult(LocationResult locationResult) {
                     Location location = locationResult.getLastLocation();
 
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-
-                    if(isDrawingButtonPressed == true) {
-                        LatLng latLng = new LatLng(latitude, longitude);
-                        points.add(latLng);
-                        redrawLine();
-                    }
-
-                    if (location != null) {
+                    if (location != null && differentLocation(location)) {
                         mLastLocation = location;
                         LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                         mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
+                        if(isDrawingButtonPressed == true) {
+                            points.add(realTime);
+                            redrawLine();
+                        }
                     }
                 }
             }, null);
         }
+    }
+
+    private boolean differentLocation(Location location) {
+        return location.getLatitude() != mLastLocation.getLatitude() || location.getLongitude() != mLastLocation.getLongitude();
     }
 }
