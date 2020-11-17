@@ -26,20 +26,64 @@ public class PaletteFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_palette, container, false);
 
-        final Button b1 = v.findViewById(R.id.color_red);
+        final Button b1 = v.findViewById(R.id.color_black);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCanvasColor(((ColorDrawable) b1.getBackground()).getColor());
             }
         });
-        final Button b2 = v.findViewById(R.id.color_black);
+        final Button b2 = v.findViewById(R.id.color_purple);
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changeCanvasColor(((ColorDrawable) b2.getBackground()).getColor());
             }
         });
+        final Button b3 = v.findViewById(R.id.color_orange);
+        b3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b3.getBackground()).getColor());
+            }
+        });
+        final Button b4 = v.findViewById(R.id.color_yellow);
+        b4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b4.getBackground()).getColor());
+            }
+        });
+        final Button b5 = v.findViewById(R.id.color_grey);
+        b5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b5.getBackground()).getColor());
+            }
+        });
+        final Button b6 = v.findViewById(R.id.color_red);
+        b6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b6.getBackground()).getColor());
+            }
+        });
+        final Button b7 = v.findViewById(R.id.color_blue);
+        b7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b7.getBackground()).getColor());
+            }
+        });
+        final Button b8 = v.findViewById(R.id.color_green);
+        b8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeCanvasColor(((ColorDrawable) b8.getBackground()).getColor());
+            }
+        });
+
+
         final ImageButton customColor = v.findViewById(R.id.customColor);
         customColor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +148,7 @@ public class PaletteFragment extends Fragment {
     }
 
     public void changeCanvasColor(int color){
+        Log.d("change", "gonna change color");
         mCallback.messageCanvas(color);
     }
     public void eraserCanvas(){mCallback.eraserCanvas();}

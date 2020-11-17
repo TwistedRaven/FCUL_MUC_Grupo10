@@ -92,7 +92,7 @@ public class CanvasFragment extends Fragment {
             isLightSensorAvailable = false;
             Log.d("Light", "Light is not initialized!");
         }
-
+        /*
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
         lightEventListener = new SensorEventListener() {
             @Override
@@ -113,9 +113,7 @@ public class CanvasFragment extends Fragment {
                 if(value < 15000) {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.25f);
                 }
-                paintCanvas.setBackgroundColor(newValue);
-                //newValue = paintCanvas.backgroundColor;
-                eraseCanvas();
+                paintCanvas.changeBackgroundColor(newValue);
                 paintCanvas.invalidate();
             }
 
@@ -124,7 +122,7 @@ public class CanvasFragment extends Fragment {
 
             }
         };
-
+*/
         shakeEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
@@ -342,6 +340,11 @@ public class CanvasFragment extends Fragment {
         public void undo() {
             finishedLines.pollLast();
             invalidate();
+        }
+
+        public void changeBackgroundColor(int color) {
+            backGroundColor = color;
+            this.setBackgroundColor(backGroundColor);
         }
 
         public int getBackgroundColor() {
