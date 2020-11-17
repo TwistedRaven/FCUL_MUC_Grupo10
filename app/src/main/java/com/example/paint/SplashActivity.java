@@ -25,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
         start_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Muda o user para o ecrã "principal"
-                Intent switch_to_main = new Intent(getApplicationContext(), MapActivity.class);
+                Intent switch_to_main = new Intent(getApplicationContext(), MainActivity.class);
                 startActivityForResult(switch_to_main, 1);
             }
         });
