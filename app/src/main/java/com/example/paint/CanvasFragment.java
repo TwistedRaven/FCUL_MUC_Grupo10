@@ -92,7 +92,7 @@ public class CanvasFragment extends Fragment {
             isLightSensorAvailable = false;
             Log.d("Light", "Light is not initialized!");
         }
-        /*
+
         //PaintCanvas(Context context, AttributeSet attrs, GestureDetector mGestureDetector)
         lightEventListener = new SensorEventListener() {
             @Override
@@ -101,16 +101,16 @@ public class CanvasFragment extends Fragment {
                 Log.d("Light", Float.toString(value));
                 int newValue = 0;
 
-                if(value >= 20000 && value < 25000) {
+                if (value >= 20000 && value < 25000) {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.75f);
                 }
-                if(value >= 25000) {
+                if (value >= 25000) {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 1f);
                 }
-                if(value < 20000 && value >= 15000) {
+                if (value < 20000 && value >= 15000) {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.5f);
                 }
-                if(value < 15000) {
+                if (value < 15000) {
                     newValue = manipulateColor(paintCanvas.getBackgroundColor(), 0.25f);
                 }
                 paintCanvas.changeBackgroundColor(newValue);
@@ -119,10 +119,9 @@ public class CanvasFragment extends Fragment {
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
-
             }
         };
-*/
+
         shakeEventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
@@ -148,19 +147,19 @@ public class CanvasFragment extends Fragment {
                     // (xDifference > moveThreshold && zDifference > moveThreshold) ||
                     // (yDifference > moveThreshold && zDifference > moveThreshold)) {
 
-                        if ((xDifference > moveThreshold && yDifference > moveThreshold) ||
-                        (xDifference > moveThreshold && zDifference > moveThreshold) ||
-                         (yDifference > moveThreshold && zDifference > moveThreshold)) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                paintCanvas.canvasErase();
-                                paintCanvas.invalidate();
+                    if ((xDifference > moveThreshold && yDifference > moveThreshold) ||
+                            (xDifference > moveThreshold && zDifference > moveThreshold) ||
+                            (yDifference > moveThreshold && zDifference > moveThreshold)) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            paintCanvas.canvasErase();
+                            paintCanvas.invalidate();
 
-                                Log.d("Done", "Done!");
-                                vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
-                            } else {
-                                vibrator.vibrate(1000);
-                            }
+                            Log.d("Done", "Done!");
+                            vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+                        } else {
+                            vibrator.vibrate(1000);
                         }
+                    }
                 }
 
                 lastX = currentX;
@@ -227,7 +226,9 @@ public class CanvasFragment extends Fragment {
         paintCanvas.changeColor(paintCanvas.getBackgroundColor());
     }
 
-    public void undo() { paintCanvas.undo(); }
+    public void undo() {
+        paintCanvas.undo();
+    }
 
     private static class PaintCanvas extends View implements View.OnTouchListener {
 
@@ -314,7 +315,8 @@ public class CanvasFragment extends Fragment {
         public void fillBackground() {
             AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(getContext(), Color.WHITE, new AmbilWarnaDialog.OnAmbilWarnaListener() {
                 @Override
-                public void onCancel(AmbilWarnaDialog dialog) {}
+                public void onCancel(AmbilWarnaDialog dialog) {
+                }
 
                 @Override
                 public void onOk(AmbilWarnaDialog dialog, int color) {
@@ -446,9 +448,9 @@ public class CanvasFragment extends Fragment {
         int g = Math.round(Color.green(color) * factor);
         int b = Math.round(Color.blue(color) * factor);
         return Color.argb(a,
-                Math.min(r,255),
-                Math.min(g,255),
-                Math.min(b,255));
+                Math.min(r, 255),
+                Math.min(g, 255),
+                Math.min(b, 255));
     }
 
 }
