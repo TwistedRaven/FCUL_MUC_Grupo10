@@ -23,17 +23,16 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.*;
+import java.io.Serializable;
+import java.util.Deque;
+import java.util.LinkedList;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
-
-import static android.content.res.Configuration.*;
 
 public class CanvasFragment extends Fragment {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
@@ -230,7 +229,11 @@ public class CanvasFragment extends Fragment {
         paintCanvas.undo();
     }
 
-    private static class PaintCanvas extends View implements View.OnTouchListener {
+    public PaintCanvas getPaintCanvas() {
+        return paintCanvas;
+    }
+
+    public static class PaintCanvas extends View implements View.OnTouchListener {
 
         private Deque<Line> finishedLines = new LinkedList<>();
         private Line currentLine;
@@ -308,7 +311,7 @@ public class CanvasFragment extends Fragment {
         public void changeColor(int color) {
             currentPaintColor = color;
             currentLine.getPaint().setColor(currentPaintColor);
-            currentLine.isFromEraser = backGroundColor == currentPaintColor;
+            currentLine.fromEraser = backGroundColor == currentPaintColor;
             //switch aqui em principio para as cores
         }
 
@@ -353,7 +356,11 @@ public class CanvasFragment extends Fragment {
             return backGroundColor;
         }
 
-        private static class Line implements Parcelable {
+        public Deque<Line> getLines() {
+            return finishedLines;
+        }
+
+        public static class Line implements Parcelable, Serializable {
             public static final Parcelable.Creator<Line> CREATOR = new Parcelable.Creator<Line>() {
                 @Override
                 public Line createFromParcel(final Parcel source) {
@@ -367,25 +374,30 @@ public class CanvasFragment extends Fragment {
             };
             private final Path path;
             private final Paint paint;
-            private boolean isFromEraser;
+            private boolean fromEraser;
 
-            public Line(boolean isFromEraser) {
-                this.path = new Path();
-                this.paint = new Paint();
-                this.isFromEraser = isFromEraser;
+            public Line(boolean fromEraser) {
+                // AndroidStudio forgot to make Path and Paint Serializable
+                final class MyPath extends Path implements Serializable {
+                }
+                final class MyPaint extends Paint implements Serializable {
+                }
+                this.path = new MyPath();
+                this.paint = new MyPaint();
+                this.fromEraser = fromEraser;
             }
 
             public Line(final @NonNull Parcel input) {
                 path = (Path) input.readValue(Path.class.getClassLoader());
                 paint = (Paint) input.readValue(Paint.class.getClassLoader());
-                isFromEraser = input.readInt() != 0; // readBoolean() requires API 29
+                fromEraser = input.readInt() != 0; // readBoolean() requires API 29
             }
 
             @Override
             public void writeToParcel(final Parcel dest, final int flags) {
                 dest.writeValue(path);
                 dest.writeValue(paint);
-                dest.writeInt(isFromEraser ? 1 : 0); // writeBoolean() requires API 29
+                dest.writeInt(fromEraser ? 1 : 0); // writeBoolean() requires API 29
             }
 
             @Override
@@ -402,12 +414,9 @@ public class CanvasFragment extends Fragment {
             }
 
             public boolean isFromEraser() {
-                return isFromEraser;
+                return fromEraser;
             }
-
         }
-
-
     }
 
     public static class GestureListener extends GestureDetector.SimpleOnGestureListener implements GestureDetector.OnDoubleTapListener {

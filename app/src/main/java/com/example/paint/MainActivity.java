@@ -2,7 +2,6 @@ package com.example.paint;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -27,8 +26,8 @@ public class MainActivity extends AppCompatActivity implements
     // Custom Toolbar - androidx one
     private Toolbar toolbar;
     private NavigationView navigationView;
-    private CanvasFragment cFragment;
-    private PaletteFragment pFragment;
+    private CanvasFragment canvasFragment;
+    private PaletteFragment paletteFragment;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -60,21 +59,21 @@ public class MainActivity extends AppCompatActivity implements
         // These serve to load the Fragment into this MainActivity
 
         // Load Canvas and Palette Fragment
-        pFragment = new PaletteFragment();
+        paletteFragment = new PaletteFragment();
         if (savedInstanceState != null) {
-            cFragment = (CanvasFragment) getSupportFragmentManager().getFragment(savedInstanceState, canvasFragmentBundleKey);
-            if (cFragment == null) {
+            canvasFragment = (CanvasFragment) getSupportFragmentManager().getFragment(savedInstanceState, canvasFragmentBundleKey);
+            if (canvasFragment == null) {
                 throw new IllegalArgumentException("Bundle returned null CanvasFragment.");
             }
         } else {
-            cFragment = new CanvasFragment();
-            fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
+            canvasFragment = new CanvasFragment();
+            fragmentTransaction.add(R.id.canvas_fragment, canvasFragment); //Container do Canvas Fragment
         }
 
         // You need to indicate the container fragment where they need to appear
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
+            fragmentTransaction.add(R.id.palette_fragment, paletteFragment); //Container do Palette fragment
         }
 
         // Needs to be committed to be loaded into the app
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(final @NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState, canvasFragmentBundleKey, cFragment);
+        getSupportFragmentManager().putFragment(outState, canvasFragmentBundleKey, canvasFragment);
     }
 
     @Override
@@ -96,13 +95,13 @@ public class MainActivity extends AppCompatActivity implements
         if (menuItem.getItemId() == R.id.home) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            cFragment = new CanvasFragment();
-            pFragment = new PaletteFragment();
+            canvasFragment = new CanvasFragment();
+            paletteFragment = new PaletteFragment();
             // Replace the fragment so it doesn't keep stacking on top of itself
-            fragmentTransaction.add(R.id.canvas_fragment, cFragment); //Container do Canvas Fragment
+            fragmentTransaction.add(R.id.canvas_fragment, canvasFragment); //Container do Canvas Fragment
 
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fragmentTransaction.add(R.id.palette_fragment, pFragment); //Container do Palette fragment
+                fragmentTransaction.add(R.id.palette_fragment, paletteFragment); //Container do Palette fragment
             }
 
             fragmentTransaction.commit();
@@ -137,12 +136,20 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void messageCanvas(int color) {
-        cFragment.changeCanvasColor(color);
+        canvasFragment.changeCanvasColor(color);
     }
 
     @Override
-    public void eraserCanvas() { cFragment.eraseCanvas(); }
+    public void eraserCanvas() {
+        canvasFragment.eraseCanvas();
+    }
 
     @Override
-    public void undo() { cFragment.undo(); }
+    public void undo() {
+        canvasFragment.undo();
+    }
+
+    public CanvasFragment getCanvasFragment() {
+        return canvasFragment;
+    }
 }
