@@ -360,6 +360,10 @@ public class CanvasFragment extends Fragment {
             return finishedLines;
         }
 
+        public void setLines(final Deque<Line> lines) {
+            this.finishedLines = lines;
+        }
+
         public static class Line implements Parcelable, Serializable {
             public static final Parcelable.Creator<Line> CREATOR = new Parcelable.Creator<Line>() {
                 @Override

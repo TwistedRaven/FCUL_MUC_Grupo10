@@ -40,4 +40,5 @@
     <string name="definicoes">Definições</string>
     <string name="title_activity_map">Map</string>
     <string name="settings_save_drawing">Save Drawing</string>
+    <string name="settings_restore_drawing">Restore Drawing</string>
 </resources>
