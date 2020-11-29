@@ -52,6 +52,7 @@ public class SettingsFragment extends Fragment {
                 for (final CanvasFragment.PaintCanvas.Line line : lines) {
                     databaseReference.child(Integer.toString(i++)).setValue(line);
                 }
+                Toast.makeText(getContext(), "Saved with success.", Toast.LENGTH_SHORT).show();
             }
         });
         final Button restoreButton = view.findViewById(R.id.settings_restore_button);
@@ -82,13 +83,14 @@ public class SettingsFragment extends Fragment {
                                 }
                                 final CanvasFragment.PaintCanvas.Line line = new CanvasFragment.PaintCanvas.Line(linePoints, lineColor, lineFromEraser);
                                 lines.addLast(line);
-                                mainActivity.getCanvasFragment().getPaintCanvas().setAndInitLines(lines);
                             } else {
                                 // nota a database guarda inteiros como Long
                                 final int color = ((Long) Objects.requireNonNull(snapshot.child("backgroundColor").getValue())).intValue();
                                 mainActivity.getCanvasFragment().getPaintCanvas().changeBackgroundColor(color);
                             }
                         }
+                        mainActivity.getCanvasFragment().getPaintCanvas().setAndInitLines(lines);
+                        Toast.makeText(getContext(), "Restore succeeded.", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
