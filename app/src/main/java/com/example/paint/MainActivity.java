@@ -1,5 +1,6 @@
 package com.example.paint;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -96,28 +97,33 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onNavigationItemSelected(final @NonNull MenuItem menuItem) {
-        // Close the menu everytime you click on a menu item
-        drawerLayout.closeDrawer(GravityCompat.START);
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        if(menuItem.getItemId() == R.id.home) {
-            fragmentTransaction.hide(settingsFragment).hide(aboutFragment);
-            fragmentTransaction.show(canvasFragment);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fragmentTransaction.show(paletteFragment);
+        if(menuItem.getItemId() == R.id.map){
+            Intent switch_to_main = new Intent(getApplicationContext(), MapActivity.class);
+            startActivityForResult(switch_to_main, 1);
+        }else {
+            // Close the menu everytime you click on a menu item
+            drawerLayout.closeDrawer(GravityCompat.START);
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            if (menuItem.getItemId() == R.id.home) {
+                fragmentTransaction.hide(settingsFragment).hide(aboutFragment);
+                fragmentTransaction.show(canvasFragment);
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    fragmentTransaction.show(paletteFragment);
+                } else {
+                    fragmentTransaction.hide(paletteFragment);
+                }
+            } else if (menuItem.getItemId() == R.id.about) {
+                fragmentTransaction.hide(settingsFragment).hide(canvasFragment).hide(paletteFragment);
+                fragmentTransaction.show(aboutFragment);
+            } else if (menuItem.getItemId() == R.id.settings) {
+                fragmentTransaction.hide(aboutFragment).hide(canvasFragment).hide(paletteFragment);
+                fragmentTransaction.show(settingsFragment);
             } else {
-                fragmentTransaction.hide(paletteFragment);
+                throw new IllegalStateException("MenuItem return invalid ItemId.");
             }
-        } else if(menuItem.getItemId() == R.id.about) {
-            fragmentTransaction.hide(settingsFragment).hide(canvasFragment).hide(paletteFragment);
-            fragmentTransaction.show(aboutFragment);
-        } else if(menuItem.getItemId() == R.id.settings) {
-            fragmentTransaction.hide(aboutFragment).hide(canvasFragment).hide(paletteFragment);
-            fragmentTransaction.show(settingsFragment);
-        } else {
-            throw new IllegalStateException("MenuItem return invalid ItemId.");
+            fragmentTransaction.commit();
         }
-        fragmentTransaction.commit();
         return true;
     }
 

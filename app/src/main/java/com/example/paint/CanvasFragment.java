@@ -100,7 +100,7 @@ public class CanvasFragment extends Fragment {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 float value = sensorEvent.values[0];
-                Log.d("Light", Float.toString(value));
+                //Log.d("Light", Float.toString(value));
                 int newValue = 0;
 
                 if (value >= 20000 && value < 25000) {
@@ -118,6 +118,8 @@ public class CanvasFragment extends Fragment {
                 paintCanvas.changeBackgroundColor(newValue);
                 paintCanvas.invalidate();
             }
+
+
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int i) {
@@ -156,7 +158,7 @@ public class CanvasFragment extends Fragment {
                             paintCanvas.canvasErase();
                             paintCanvas.invalidate();
 
-                            Log.d("Done", "Done!");
+                            //Log.d("Done", "Done!");
                             vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                         } else {
                             vibrator.vibrate(1000);

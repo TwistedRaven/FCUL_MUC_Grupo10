@@ -2,6 +2,7 @@ package com.example.paint;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -58,41 +60,61 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        checkLocationPermission();
 
-        points = new ArrayList<LatLng>();
+    }
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    mLastLocation = location;
-                    LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
+    private void checkLocationPermission() {
+        Log.d("permission", "checking");
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 99);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode != 99){
+            return;
+        }
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            points = new ArrayList<LatLng>();
+
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        mLastLocation = location;
+                        LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
+                    }
                 }
-            }
-        });
+            });
 
-        requestLocationUpdates();
+            requestLocationUpdates();
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
 
-        button = findViewById(R.id.drawing_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (!isDrawingButtonPressed){
-                    isDrawingButtonPressed = true;
-                    button.setText("Stop Drawing");
-                } else {
-                    isDrawingButtonPressed = false;
-                    button.setText("Start Drawing");
+            button = findViewById(R.id.drawing_button);
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (!isDrawingButtonPressed){
+                        isDrawingButtonPressed = true;
+                        button.setText("Stop Drawing");
+                    } else {
+                        isDrawingButtonPressed = false;
+                        button.setText("Start Drawing");
+                    }
                 }
-            }
-        });
-
+            });
+        }else{
+            Intent switch_to_main = new Intent(getApplicationContext(), MainActivity.class);
+            startActivityForResult(switch_to_main, 1);
+        }
     }
 
     /**
