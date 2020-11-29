@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements
         // These serve to load the Fragment into this MainActivity
 
         settingsFragment = new SettingsFragment();
-        fragmentTransaction.add(R.id.main_body, settingsFragment);
+        fragmentTransaction.add(R.id.main_body, settingsFragment).hide(settingsFragment);
 
         aboutFragment = new AboutFragment();
-        fragmentTransaction.add(R.id.main_body, aboutFragment);
+        fragmentTransaction.add(R.id.main_body, aboutFragment).hide(aboutFragment);
 
         // Load Canvas and Palette Fragment
         paletteFragment = new PaletteFragment();
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             fragmentTransaction.add(R.id.palette_fragment, paletteFragment); //Container do Palette fragment
+            fragmentTransaction.hide(settingsFragment).hide(aboutFragment);
         }
 
         // Needs to be committed to be loaded into the app
@@ -114,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements
                     .setNegativeButton(android.R.string.no, null).show();
         }else {
             // Close the menu everytime you click on a menu item
-            final FragmentManager fragmentManager = getSupportFragmentManager();
-            final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (menuItem.getItemId() == R.id.home) {
                 fragmentTransaction.hide(settingsFragment).hide(aboutFragment);
                 fragmentTransaction.show(canvasFragment);
