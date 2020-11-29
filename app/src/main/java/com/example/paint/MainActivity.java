@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -28,11 +27,14 @@ public class MainActivity extends AppCompatActivity implements
     private NavigationView navigationView;
     private CanvasFragment canvasFragment;
     private PaletteFragment paletteFragment;
+    private SettingsFragment settingsFragment;
+    private AboutFragment aboutFragment;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -58,6 +60,12 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         // These serve to load the Fragment into this MainActivity
 
+        settingsFragment = new SettingsFragment();
+        fragmentTransaction.add(R.id.main_body, settingsFragment);
+
+        aboutFragment = new AboutFragment();
+        fragmentTransaction.add(R.id.main_body, aboutFragment);
+
         // Load Canvas and Palette Fragment
         paletteFragment = new PaletteFragment();
         if (savedInstanceState != null) {
@@ -67,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else {
             canvasFragment = new CanvasFragment();
-            fragmentTransaction.add(R.id.canvas_fragment, canvasFragment); //Container do Canvas Fragment
+            fragmentTransaction.add(R.id.main_body, canvasFragment); //Container do Canvas Fragment
         }
 
         // You need to indicate the container fragment where they need to appear
@@ -87,49 +95,29 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+    public boolean onNavigationItemSelected(final @NonNull MenuItem menuItem) {
         // Close the menu everytime you click on a menu item
         drawerLayout.closeDrawer(GravityCompat.START);
-
-        //Now we use the IDs of the Menu Item to identify which menu was clicked
-        if (menuItem.getItemId() == R.id.home) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            canvasFragment = new CanvasFragment();
-            paletteFragment = new PaletteFragment();
-            // Replace the fragment so it doesn't keep stacking on top of itself
-            fragmentTransaction.add(R.id.canvas_fragment, canvasFragment); //Container do Canvas Fragment
-
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        if(menuItem.getItemId() == R.id.home) {
+            fragmentTransaction.hide(settingsFragment).hide(aboutFragment);
+            fragmentTransaction.show(canvasFragment);
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fragmentTransaction.add(R.id.palette_fragment, paletteFragment); //Container do Palette fragment
+                fragmentTransaction.show(paletteFragment);
+            } else {
+                fragmentTransaction.hide(paletteFragment);
             }
-
-            fragmentTransaction.commit();
+        } else if(menuItem.getItemId() == R.id.about) {
+            fragmentTransaction.hide(settingsFragment).hide(canvasFragment).hide(paletteFragment);
+            fragmentTransaction.show(aboutFragment);
+        } else if(menuItem.getItemId() == R.id.settings) {
+            fragmentTransaction.hide(aboutFragment).hide(canvasFragment).hide(paletteFragment);
+            fragmentTransaction.show(settingsFragment);
+        } else {
+            throw new IllegalStateException("MenuItem return invalid ItemId.");
         }
-
-        if (menuItem.getItemId() == R.id.about) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            AboutFragment aFragment = new AboutFragment();
-            Fragment palette = getSupportFragmentManager().findFragmentById(R.id.palette_fragment);
-            if (palette != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fragmentTransaction.remove(getSupportFragmentManager().findFragmentById(R.id.palette_fragment)); //Container do Palette fragment
-            }
-            fragmentTransaction.replace(R.id.canvas_fragment, aFragment);
-            fragmentTransaction.commit();
-        }
-
-        if (menuItem.getItemId() == R.id.settings) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            SettingsFragment sFragment = new SettingsFragment();
-            Fragment palette = getSupportFragmentManager().findFragmentById(R.id.palette_fragment);
-            if (palette != null && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                fragmentTransaction.remove(palette); //Container do Palette fragment
-            }
-            fragmentTransaction.replace(R.id.canvas_fragment, sFragment);
-            fragmentTransaction.commit();
-        }
+        fragmentTransaction.commit();
         return true;
     }
 

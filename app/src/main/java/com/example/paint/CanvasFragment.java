@@ -191,6 +191,13 @@ public class CanvasFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(final @NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        final Parcelable[] canvasLines = paintCanvas.finishedLines.toArray(new PaintCanvas.Line[0]);
+        outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -208,13 +215,6 @@ public class CanvasFragment extends Fragment {
             mSensorManager.unregisterListener(shakeEventListener);
         }
         mSensorManager.unregisterListener(lightEventListener);
-    }
-
-    @Override
-    public void onSaveInstanceState(final @NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        final Parcelable[] canvasLines = paintCanvas.finishedLines.toArray(new PaintCanvas.Line[0]);
-        outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
     }
 
     public void changeCanvasColor(int color) {
