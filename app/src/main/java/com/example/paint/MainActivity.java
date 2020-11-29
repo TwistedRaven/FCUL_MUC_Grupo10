@@ -1,9 +1,12 @@
 package com.example.paint;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -97,12 +100,20 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onNavigationItemSelected(final @NonNull MenuItem menuItem) {
+
+        drawerLayout.closeDrawer(GravityCompat.START);
         if(menuItem.getItemId() == R.id.map){
-            Intent switch_to_main = new Intent(getApplicationContext(), MapActivity.class);
-            startActivityForResult(switch_to_main, 1);
+            new AlertDialog.Builder(this)
+                    .setTitle("Do you want to change to map drawing?")
+                    .setMessage("You will lose all unsaved drawing")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            Intent switch_to_main = new Intent(getApplicationContext(), MapActivity.class);
+                            startActivityForResult(switch_to_main, 1);
+                        }})
+                    .setNegativeButton(android.R.string.no, null).show();
         }else {
             // Close the menu everytime you click on a menu item
-            drawerLayout.closeDrawer(GravityCompat.START);
             final FragmentManager fragmentManager = getSupportFragmentManager();
             final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             if (menuItem.getItemId() == R.id.home) {

@@ -68,7 +68,45 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         Log.d("permission", "checking");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 99);
+        }else{
+            startMap();
         }
+    }
+
+    private void startMap() {
+        points = new ArrayList<LatLng>();
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    mLastLocation = location;
+                    LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
+                }
+            }
+        });
+
+        requestLocationUpdates();
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        button = findViewById(R.id.drawing_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!isDrawingButtonPressed){
+                    isDrawingButtonPressed = true;
+                    button.setText("Stop Drawing");
+                } else {
+                    isDrawingButtonPressed = false;
+                    button.setText("Start Drawing");
+                }
+            }
+        });
     }
 
     @Override
@@ -78,39 +116,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         }
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            points = new ArrayList<LatLng>();
-
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        mLastLocation = location;
-                        LatLng realTime = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(realTime));
-                    }
-                }
-            });
-
-            requestLocationUpdates();
-
-            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.map);
-            mapFragment.getMapAsync(this);
-
-            button = findViewById(R.id.drawing_button);
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (!isDrawingButtonPressed){
-                        isDrawingButtonPressed = true;
-                        button.setText("Stop Drawing");
-                    } else {
-                        isDrawingButtonPressed = false;
-                        button.setText("Start Drawing");
-                    }
-                }
-            });
+            startMap();
         }else{
             Intent switch_to_main = new Intent(getApplicationContext(), MainActivity.class);
             startActivityForResult(switch_to_main, 1);
