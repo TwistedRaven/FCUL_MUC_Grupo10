@@ -430,11 +430,11 @@ public class CanvasFragment extends Fragment {
 
             @Override
             public void writeToParcel(final Parcel dest, final int flags) {
-                dest.writeValue(path);
+                /*dest.writeValue(path);
                 dest.writeValue(paint);
                 dest.writeValue(points);
                 dest.writeInt(color);
-                dest.writeInt(fromEraser ? 1 : 0); // writeBoolean() requires API 29
+                dest.writeInt(fromEraser ? 1 : 0);*/ // writeBoolean() requires API 29
             }
 
             @Override
