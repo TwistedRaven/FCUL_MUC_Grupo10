@@ -43,6 +43,7 @@ public class SettingsFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                databaseReference.setValue("");
                 // vai criar uma child na database CM-Paint com o nome backgroundColor. ex: backgroundColor: -2875103
                 databaseReference.child("backgroundColor").setValue(mainActivity.getCanvasFragment().getPaintCanvas().getBackgroundColor());
                 final Deque<CanvasFragment.PaintCanvas.Line> lines = mainActivity.getCanvasFragment().getPaintCanvas().getLines();
