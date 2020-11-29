@@ -14,7 +14,7 @@
 
     <FrameLayout
         android:layout_marginTop="47sp"
-        android:id="@+id/canvas_fragment"
+        android:id="@+id/main_body"
         android:layout_width="475dp"
         android:layout_height="match_parent">
     </FrameLayout>
@@ -25,8 +25,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginLeft="475dp"
-        android:layout_alignRight="@id/canvas_fragment"
-        android:layout_alignEnd="@id/canvas_fragment"
+        android:layout_alignRight="@id/main_body"
+        android:layout_alignEnd="@id/main_body"
         android:layout_marginStart="475dp">
     </FrameLayout>
 
