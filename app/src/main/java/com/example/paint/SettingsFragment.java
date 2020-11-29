@@ -11,24 +11,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Objects;
 
 
 public class SettingsFragment extends Fragment {
-    private static final String storageLocation = "lines.txt";
-
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -39,63 +35,66 @@ public class SettingsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final StorageReference storageReference = FirebaseStorage.getInstance().getReference(storageLocation);
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
         final MainActivity mainActivity = (MainActivity) requireActivity();
         final View view = inflater.inflate(R.layout.fragment_settings, container, false);
         final Button saveButton = view.findViewById(R.id.settings_save_button);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                try (final ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
-                    final Deque<CanvasFragment.PaintCanvas.Line> lines = mainActivity.getCanvasFragment().getPaintCanvas().getLines();
-                    objectOutputStream.writeObject(lines);
-                } catch (final IOException e) {
-                    Log.e("Settings", e.getMessage(), e);
-                    System.exit(1);
+                // vai criar uma child na database CM-Paint com o nome backgroundColor. ex: backgroundColor: -2875103
+                databaseReference.child("backgroundColor").setValue(mainActivity.getCanvasFragment().getPaintCanvas().getBackgroundColor());
+                final Deque<CanvasFragment.PaintCanvas.Line> lines = mainActivity.getCanvasFragment().getPaintCanvas().getLines();
+
+                // por cada linha vai criar uma child com os conteúdos da linha
+                int i = 0;
+                for (final CanvasFragment.PaintCanvas.Line line : lines) {
+                    databaseReference.child(Integer.toString(i++)).setValue(line);
                 }
-                final UploadTask uploadTask = storageReference.putBytes(byteArrayOutputStream.toByteArray());
-                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(getContext(), "Drawing saved with success.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(final @NonNull Exception e) {
-                        Log.e("Settings", e.getMessage(), e);
-                        Toast.makeText(getContext(), "Error while Saving!", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
         final Button restoreButton = view.findViewById(R.id.settings_restore_button);
         restoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                //final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(storageReference.getBytes(9));
-                final Task<byte[]> task = storageReference.getBytes(Long.MAX_VALUE);
-                task.addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onSuccess(final byte[] bytes) {
-                        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-                        try (final ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
-                            @SuppressWarnings("unchecked") final Deque<CanvasFragment.PaintCanvas.Line> lines = (Deque<CanvasFragment.PaintCanvas.Line>) objectInputStream.readObject();
-                            mainActivity.getCanvasFragment().getPaintCanvas().setLines(lines);
-                            Toast.makeText(getContext(), "Drawing restored with success", Toast.LENGTH_SHORT).show();
-                        } catch (final IOException | ClassNotFoundException e) {
-                            Log.e("Settings", e.getMessage(), e);
-                            System.exit(1);
+                    @SuppressWarnings("unchecked")
+                    public void onDataChange(final @NonNull DataSnapshot snapshot) {
+                        final Deque<CanvasFragment.PaintCanvas.Line> lines = new LinkedList<>();
+                        // vai iterar todos os childs (0, 1, ..., backgroundColor)
+                        for (final DataSnapshot innerSnapshot : snapshot.getChildren()) {
+                            if (!Objects.requireNonNull(innerSnapshot.getKey()).equals("backgroundColor")) {
+                                Log.d("Settings", innerSnapshot.toString());
+                                final HashMap<String, Object> lineAsMap = (HashMap<String, Object>) innerSnapshot.getValue();
+                                if (lineAsMap == null) {
+                                    throw new IllegalStateException("InnerSnapShot was null.");
+                                }
+
+                                final int lineColor = ((Long) Objects.requireNonNull(lineAsMap.get("color"))).intValue();
+                                final boolean lineFromEraser = (Boolean) Objects.requireNonNull(lineAsMap.get("fromEraser"));
+                                final ArrayList<Object> linePointsAsList = (ArrayList<Object>) Objects.requireNonNull(lineAsMap.get("points"));
+
+                                final Deque<Float> linePoints = new LinkedList<>();
+                                for (final Object pointAsObject : linePointsAsList) {
+                                    linePoints.addLast(((Double) pointAsObject).floatValue());
+                                }
+                                final CanvasFragment.PaintCanvas.Line line = new CanvasFragment.PaintCanvas.Line(linePoints, lineColor, lineFromEraser);
+                                lines.addLast(line);
+                                mainActivity.getCanvasFragment().getPaintCanvas().setAndInitLines(lines);
+                            } else {
+                                // nota a database guarda inteiros como Long
+                                final int color = ((Long) Objects.requireNonNull(snapshot.child("backgroundColor").getValue())).intValue();
+                                mainActivity.getCanvasFragment().getPaintCanvas().changeBackgroundColor(color);
+                            }
                         }
                     }
-                });
-                task.addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(final @NonNull Exception e) {
-                        Log.e("Settings", e.getMessage(), e);
-                        Toast.makeText(getContext(), "Error while Restoring!", Toast.LENGTH_SHORT).show();
+                    public void onCancelled(final @NonNull DatabaseError error) {
+                        Log.e("Settings", error.getMessage(), error.toException());
+                        Toast.makeText(getContext(), "Failed to read value.", Toast.LENGTH_LONG).show();
                     }
                 });
             }

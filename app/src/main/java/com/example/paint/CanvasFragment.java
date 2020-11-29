@@ -28,6 +28,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.database.Exclude;
+
 import java.io.Serializable;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -36,6 +38,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class CanvasFragment extends Fragment {
     private static final String canvasLinesBundleKey = "0wskkf37ed";
+    private static final String canvasBackgroundColorBundleKey = "jdbdjegye";
     private float moveThreshold = 1200f;
     //private float moveThreshold = 7f;
 
@@ -187,6 +190,7 @@ public class CanvasFragment extends Fragment {
             for (final Parcelable line : lines) {
                 paintCanvas.finishedLines.addLast((PaintCanvas.Line) line);
             }
+            paintCanvas.backGroundColor = savedInstanceState.getInt(canvasBackgroundColorBundleKey);
         }
     }
 
@@ -195,6 +199,7 @@ public class CanvasFragment extends Fragment {
         super.onSaveInstanceState(outState);
         final Parcelable[] canvasLines = paintCanvas.finishedLines.toArray(new PaintCanvas.Line[0]);
         outState.putParcelableArray(canvasLinesBundleKey, canvasLines);
+        outState.putInt(canvasBackgroundColorBundleKey, paintCanvas.backGroundColor);
     }
 
     @Override
@@ -249,16 +254,16 @@ public class CanvasFragment extends Fragment {
             this.mGestureDetector = mGestureDetector;
             setOnTouchListener(this);
             setBackgroundColor(backGroundColor);
-            initPaint();
+            initPaint(currentLine);
         }
 
         //Inicializa o stroke da imagem
-        private void initPaint() {
-            currentLine.getPaint().setAntiAlias(true);
-            currentLine.getPaint().setStrokeWidth(20f);
-            currentLine.getPaint().setColor(currentPaintColor);
-            currentLine.getPaint().setStyle(Paint.Style.STROKE);
-            currentLine.getPaint().setStrokeJoin(Paint.Join.ROUND);
+        private void initPaint(final Line line) {
+            line.getPaint().setAntiAlias(true);
+            line.getPaint().setStrokeWidth(20f);
+            line.getPaint().setColor(currentPaintColor);
+            line.getPaint().setStyle(Paint.Style.STROKE);
+            line.getPaint().setStrokeJoin(Paint.Join.ROUND);
         }
 
         @Override
@@ -290,14 +295,18 @@ public class CanvasFragment extends Fragment {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     currentLine.getPath().moveTo(eventX, eventY); // updates the path initial point
+                    currentLine.getPoints().addLast(eventX);
+                    currentLine.getPoints().addLast(eventY);
                     return true;
                 case MotionEvent.ACTION_MOVE:
                     currentLine.getPath().lineTo(eventX, eventY); // makes a line to the point each time this event is fired
+                    currentLine.getPoints().addLast(eventX);
+                    currentLine.getPoints().addLast(eventY);
                     break;
                 case MotionEvent.ACTION_UP: // when you lift your finger
                     finishedLines.addLast(currentLine);
                     currentLine = new Line(currentPaintColor == backGroundColor);
-                    initPaint();
+                    initPaint(currentLine);
                     performClick();
                     break;
                 default:
@@ -310,7 +319,7 @@ public class CanvasFragment extends Fragment {
 
         public void changeColor(int color) {
             currentPaintColor = color;
-            currentLine.getPaint().setColor(currentPaintColor);
+            currentLine.setColor(color);
             currentLine.fromEraser = backGroundColor == currentPaintColor;
             //switch aqui em principio para as cores
         }
@@ -360,8 +369,17 @@ public class CanvasFragment extends Fragment {
             return finishedLines;
         }
 
-        public void setLines(final Deque<Line> lines) {
+        public void setAndInitLines(final Deque<Line> lines) {
             this.finishedLines = lines;
+            for (final Line line : this.finishedLines) {
+                initPaint(line);
+                line.getPaint().setColor(line.color);
+                final LinkedList<Float> linePoints = (LinkedList<Float>) line.getPoints();
+                line.getPath().moveTo(linePoints.get(0), linePoints.get(1));
+                for (int i = 2; i < linePoints.size(); i += 2) {
+                    line.getPath().lineTo(linePoints.get(i), linePoints.get(i + 1));
+                }
+            }
         }
 
         public static class Line implements Parcelable, Serializable {
@@ -378,22 +396,33 @@ public class CanvasFragment extends Fragment {
             };
             private final Path path;
             private final Paint paint;
+
+            private final Deque<Float> points;
+            private int color;
             private boolean fromEraser;
 
             public Line(boolean fromEraser) {
-                // AndroidStudio forgot to make Path and Paint Serializable
-                final class MyPath extends Path implements Serializable {
-                }
-                final class MyPaint extends Paint implements Serializable {
-                }
-                this.path = new MyPath();
-                this.paint = new MyPaint();
+                this.path = new Path();
+                this.paint = new Paint();
+                this.points = new LinkedList<>();
+                this.color = Color.BLACK;
                 this.fromEraser = fromEraser;
             }
 
+            public Line(final Deque<Float> points, final int color, final boolean fromEraser) {
+                this.path = new Path();
+                this.paint = new Paint();
+                this.points = points;
+                this.color = color;
+                this.fromEraser = fromEraser;
+            }
+
+            @SuppressWarnings("unchecked")
             public Line(final @NonNull Parcel input) {
                 path = (Path) input.readValue(Path.class.getClassLoader());
                 paint = (Paint) input.readValue(Paint.class.getClassLoader());
+                points = (Deque<Float>) input.readValue(Deque.class.getClassLoader());
+                color = input.readInt();
                 fromEraser = input.readInt() != 0; // readBoolean() requires API 29
             }
 
@@ -401,6 +430,8 @@ public class CanvasFragment extends Fragment {
             public void writeToParcel(final Parcel dest, final int flags) {
                 dest.writeValue(path);
                 dest.writeValue(paint);
+                dest.writeValue(points);
+                dest.writeInt(color);
                 dest.writeInt(fromEraser ? 1 : 0); // writeBoolean() requires API 29
             }
 
@@ -409,12 +440,27 @@ public class CanvasFragment extends Fragment {
                 return 0;
             }
 
+            @Exclude
             public Path getPath() {
                 return path;
             }
 
+            @Exclude
             public Paint getPaint() {
                 return paint;
+            }
+
+            public Deque<Float> getPoints() {
+                return points;
+            }
+
+            public int getColor() {
+                return color;
+            }
+
+            public void setColor(final int color) {
+                this.color = color;
+                paint.setColor(color);
             }
 
             public boolean isFromEraser() {
